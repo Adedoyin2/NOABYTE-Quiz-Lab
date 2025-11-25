@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NOABYTE QUIZ LAB </title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{--bg:#0b1220;
+    --card:#081226;
+    --accent:#1e90ff;
+    --muted:#9aa6b2;
+    --glass:rgba(255,255,255,0.03)}
+*{box-sizing:border-box}
+body{margin:0;
+    font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+    background:linear-gradient(180deg,#041022,#071a2b);
+    /* background-image: url(Bac.jpg); */
+    background-image: url(456.jpg);
+    background-size: cover;
+    color:#e8f1f8;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px}
+.container{width:100%;max-width:1100px}
+.card{background:linear-gradient(180deg,rgba(24, 41, 87, 0.267),rgb(10, 25, 54));border-radius:12px;padding:20px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}/* header */
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#2bb6ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#031428}
+h1{margin:0;font-size:20px}
+.top-info{color:var(--muted);font-size:13px}
+
+/* layout sections separated */
+#setupSection, #quizSection{margin-top:12px}
+#quizSection{display:none}
+
+/* setup form */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column}
+label{font-size:13px;color:var(--muted);margin-bottom:6px}
+input,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+.actions{display:flex;gap:8px;align-items:center}
+button{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:#021422;font-weight:600;cursor:pointer}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+/* quiz header */
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.user-badge{display:flex;align-items:center;gap:10px}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#fff2,#fff1);display:flex;align-items:center;justify-content:center;color:#021428;font-weight:700}
+.small{font-size:13px;color:var(--muted)}
+
+/* question card */
+.q-card{padding:18px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));}
+.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.progress{height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#61b6ff);width:0%}
+.q-text{font-size:18px;margin-bottom:12px}
+
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;user-select:none;transition:all .18s;display:flex;gap:12px;align-items:center}
+.opt:hover{transform:translateY(-3px)}
+.opt .pill{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;background:rgba(255,255,255,0.02)}
+
+.opt.disabled{pointer-events:none;opacity:0.8}
+.opt.correct{border-color:rgba(30,144,255,0.9);box-shadow:0 6px 18px rgba(30,144,255,0.08);}
+.opt.wrong{border-color:rgba(255,60,60,0.9);box-shadow:0 6px 18px rgba(255,60,60,0.06)}
+
+.navs{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.meta{color:var(--muted);font-size:14px}
+
+/* results */
+#resultView{display:none;padding:12px;margin-top:12px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+.result-stats{display:flex;gap:12px;flex-wrap:wrap}
+.stat{padding:10px;border-radius:8px;background:var(--glass);min-width:160px}
+
+/* certificate canvas preview */
+.cert-preview{margin-top:10px;display:flex;gap:12px;align-items:center}
+
+.footer1{margin-top:12px;color:var(--muted);font-size:13px;text-align:center}
+footer{margin-top:12px;color:var(--muted);font-size:13px;text-align:center} 
+/* Inline certificate styles (keeps print clean) */
+    
+
+/* responsive */
+@media(max-width:800px){.grid{grid-template-columns:1fr}.options{grid-template-columns:1fr}.container{padding:8px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <header>
+        <div class="brand">
+          <div class="logo">NB</div>
+          <div>
+            <h1>NOABYTE QUIZ LAB</h1>
+            <div class="top-info">Sharpen your tech skills • Proof how good you are.</div>
+          </div>
+        </div>
+        <div class="top-right small">
+          Best score: <strong id="bestScoreDisplay">-</strong>
+        </div>
+      </header><!-- SETUP SECTION (separate) -->
+  <section id="setupSection" class="card">
+    <h2 style="margin-top:0">Setup your quiz</h2> 
+    <p class="small">Enter your details and read the below rules before pressing <strong>Start Quiz</strong>.</p>
+    <!-- <p class="small">Choose a category, difficulty, how many questions and your time limit. Then press Start Quiz.</p> -->
+    <div class="grid">
+      <div class="field">
+        <label for="username">Your name</label>
+        <input id="username" placeholder="Enter your full name" />
+      </div>
+      <div class="field">
+        <label for="category">Topic / Category</label>
+        <select style="color: #708099;"  id="category">
+          <option value="general">Tech General Questions</option>
+          <option value="frontend">Front End Developer</option>
+          <option value="backend">Back End Developer</option>
+          <option value="fullstack">Full Stack Developer</option>
+          <option value="python">Python Developer</option>
+          <option value="mobile">Mobile Developer</option>
+          <option value="ai_ml">AI / ML Developer</option>
+          <option value="networking">Networking</option>
+          <option value="cybersecurity">CYBER SECURITY</option>
+          <option value="software">Software Dev Developer</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <!-- <option value="easy">Easy</option> -->
+          <option value="medium" selected>Medium</option>
+          <!-- <option value="hard">Hard</option> -->
+        </select>
+      </div>
+      <div class="field">
+        <label for="numQuestions">Number of Questions</label>
+        <input id="numQuestions" type="number" min="1" max="50" value="10" />
+      </div>
+      <div class="field">
+        <label for="timeLimit">Time limit (minutes)</label>
+        <input id="timeLimit" type="number" min="1" max="120" value="5" />
+      </div>
+      <div class="field">
+        <label for="shuffleQ">Shuffle Questions?</label>
+        <select id="shuffleQ">
+          <option value="true" selected>Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+      <button id="startBtn">Start Quiz</button>
+      <button class="ghost" id="viewLeaderboardBtn">View Leaderboard</button>
+      <div style="margin-left:auto;color:var(--muted);font-size:13px">Rules: Score 80%+ to earn a certificate. Each question answered locks after reveal. Timer auto-submits when expired.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ SECTION (hidden until started) -->
+  <section id="quizSection" class="card">
+    <div class="quiz-header">
+      <div class="user-badge">
+        <div class="avatar" id="userAvatar">N</div>
+        <div>
+          <div id="displayName" style="font-weight:700">Guest</div>
+          <div class="small" id="displayCategory">Category: </div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="small">Time left</div>
+        <div id="timerDisplay" style="font-weight:700;font-size:18px">00:00</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-top">
+        <div class="meta">Question <span id="currentIndex">0</span> of <span id="totalQuestions">0</span></div>
+        <div class="progress" style="width:60%"><i id="progressFill"></i></div>
+        <div class="meta">Answered: <span id="answeredCount">0</span>/<span id="totalQuestions2">0</span></div>
+      </div>
+
+      <div class="q-text" id="questionText">Welcome press start to begin</div>
+
+      <div class="options" id="optionsWrap">
+        <!-- option buttons rendered here -->
+      </div>
+
+      <div class="navs">
+        <div>
+          <button id="prevBtn" class="ghost">Previous</button>
+          <button id="nextBtn" class="ghost">Next</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="small">Progress</div>
+          <div style="width:140px;height:12px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden;margin-left:8px">
+            <div id="qProgress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#61b6ff)"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="resultView">
+      <h3>Result</h3>
+      <div class="result-stats">
+        <div class="stat">Name: <strong id="resName"></strong></div>
+        <div class="stat">Score: <strong id="resScore"></strong></div>
+        <div class="stat">Correct: <strong id="resCorrect"></strong></div>
+        <div class="stat">Wrong: <strong id="resWrong"></strong></div>
+        <div class="stat">Percentage: <strong id="resPercent"></strong></div>
+        <div class="stat">Time spent: <strong id="resTime"></strong></div>
+      </div>
+
+      <div style="margin-top:10px">
+        <button id="retakeBtn">Retake (shuffle)</button>
+        <button id="restartBtn" class="ghost">Restart (same order)</button>
+        <button id="printReceiptBtn" class="ghost">Print Results / Save PDF</button>
+        <button id="downloadCertBtn" style="display:none">Download Certificate</button>
+      </div>
+
+      <div class="cert-preview">
+        <canvas id="certCanvas" width="1000" height="600" style="border-radius:6px;display:none"></canvas>
+        <div id="solutionsWrap" style="flex:1"></div>
+      </div>
+    </div>
+
+  </section>
+ 
+    <h1 class="footer1"><strong style="color: white;">Rules:</strong>  Choose the number of questions 
+      <strong style="color: white; letter-spacing: 1px;">60s</strong>, set your time <strong style="color: white; letter-spacing: 1px;">30m</strong>, 
+      and press Start. Each question is single choice. Once answered you cannot change your answer.</h1>
+  <footer>NOABYTE TECH • Quiz App  good luck</strong> <strong style=" float: right; font-size: 11px;">v1.0</strong> </footer>
+</div>
+
+  </div> 
+  <script src="script.js"></script>
+  <script src="Ne"></script>
+      <script>
+        /* ==================== QUESTIONS DATA ====================
+       Stored in an array as requested. Each object: q, options, answer, category, difficulty, explanation
+    */  
+const QUESTIONS = [
+
+// ============================
+// FRONTEND DEVELOPER QUESTIONS
+// ============================
+{q:'What does CSS stand for?', options:['Creative Style System','Cascading Style Sheets','Computer Styling Syntax','Color Style Selector'], answer:1, category:'frontend', explanation:'CSS means Cascading Style Sheets.'},   
+{q:'Which HTML tag is used for JavaScript?', options:['<js>','<script>','<javascript>','<code>'], answer:1, category:'frontend', explanation:'<script> is the correct tag for JS.'},
+{q:'Which CSS layout uses rows and columns?', options:['Flexbox','Grid','Block','Inline-block'], answer:1, category:'frontend', explanation:'CSS Grid is a two-dimensional layout system.'},
+{q:'React is based on what concept?', options:['Classes','Templates','Components','Controllers'], answer:2, category:'frontend', explanation:'React UI is built using components.'},  
+{q:'Which attribute makes HTML input required?', options:['must','validate','required','need'], answer:2, category:'frontend', explanation:'The required attribute forces user input.'},
+{q:'What does HTML stand for?', options:['Hyper Trainer Marking Language','HyperText Markup Language','HyperText Markdown Language','HighText Markup Language'], answer:1, category:'frontend', explanation:'HTML stands for HyperText Markup Language.'},
+{q:'Which language runs in a web browser?', options:['Java','C','Python','JavaScript'], answer:3, category:'frontend', explanation:'JavaScript is the language of the browser.'},
+{q:'Which is NOT a JavaScript framework?', options:['React','Laravel','Vue','Angular'], answer:1, category:'frontend', explanation:'Laravel is a PHP framework.'},
+{q:'What does CSS stand for?', options:['Computer Style Sheets','Creative Style System','Cascading Style Sheets','Colorful Style Sheets'], answer:2, category:'frontend', explanation:'CSS stands for Cascading Style Sheets.'},
+{q:'Which HTML tag is used for the largest heading?', options:['<h6>','<heading>','<h1>','<head>'], answer:2, category:'frontend', explanation:'<h1> represents the largest heading.'},
+{q:'Which CSS property controls text size?', options:['font-style','text-size','font-size','text-style'], answer:2, category:'frontend', explanation:'font-size controls the size of text.'},
+{q:'How do you select an element with ID "demo" in CSS?', options:['#demo','.demo','*demo','demo'], answer:0, category:'frontend', explanation:'# is used to select elements by ID.'},
+{q:'Which property is used to change the background color?', options:['color','bgcolor','background-color','bg-color'], answer:2, category:'frontend', explanation:'background-color changes the background color.'},
+{q:'How do you create a function in JavaScript?', options:['function:myFunction()','function myFunction()','function = myFunction()','function => myFunction()'], answer:1, category:'frontend', explanation:'function keyword is used to declare functions.'},
+{q:'Which method removes the last element from an array?', options:['pop()','remove()','delete()','splice()'], answer:0, category:'frontend', explanation:'pop() removes the last element.'},
+{q:'What is the correct way to write a JavaScript array?', options:['var colors = "red", "green", "blue"','var colors = ["red", "green", "blue"]','var colors = (1:"red", 2:"green", 3:"blue")','var colors = "red", "green", "blue"'], answer:1, category:'frontend', explanation:'Arrays use square brackets [].'},
+{q:'Which operator is used to assign a value to a variable?', options:['*','-','=','x'], answer:2, category:'frontend', explanation:'= is the assignment operator.'},
+{q:'How do you write "Hello World" in an alert box?', options:['alertBox("Hello World")','msg("Hello World")','alert("Hello World")','msgBox("Hello World")'], answer:2, category:'frontend', explanation:'alert() displays an alert box.'},
+{q:'How can you add a comment in JavaScript?', options:['<!--This is a comment-->','//This is a comment','*This is a comment*','**This is a comment**'], answer:1, category:'frontend', explanation:'// is for single-line comments.'},
+{q:'What is the correct way to write a JavaScript object?', options:['var person = {firstName:"John", lastName:"Doe"}','var person = (firstName:"John", lastName:"Doe")','var person = <firstName:"John", lastName:"Doe">','var person = [firstName:"John", lastName:"Doe"]'], answer:0, category:'frontend', explanation:'Objects use curly braces {}.'},
+{q:'Which event occurs when the user clicks on an HTML element?', options:['onchange','onclick','onmouseclick','onbuttonclick'], answer:1, category:'frontend', explanation:'onclick handles click events.'},
+{q:'How do you declare a JavaScript variable?', options:['v carName','variable carName','var carName','let carName'], answer:2, category:'frontend', explanation:'var is used to declare variables.'},
+{q:'Which operator is used to compare two values?', options:['=','==',':=','==='], answer:1, category:'frontend', explanation:'== compares values for equality.'},
+{q:'What will "console.log(typeof null)" output?', options:['null','undefined','object','number'], answer:2, category:'frontend', explanation:'typeof null returns "object" (historical JavaScript quirk).'},
+{q:'Which method converts JSON string to JavaScript object?', options:['JSON.parse()','JSON.stringify()','JSON.convert()','JSON.toObject()'], answer:0, category:'frontend', explanation:'JSON.parse() converts JSON to object.'},
+{q:'What is React?', options:['A programming language','A database','A JavaScript library','An operating system'], answer:2, category:'frontend', explanation:'React is a JavaScript library for building UIs.'},
+{q:'Which hook is used for side effects in React?', options:['useState','useEffect','useContext','useReducer'], answer:1, category:'frontend', explanation:'useEffect handles side effects.'},
+{q:'What is JSX?', options:['A new programming language','A syntax extension for JavaScript','A database query language','A testing framework'], answer:1, category:'frontend', explanation:'JSX is syntax extension for JavaScript.'},
+{q:'Which method is used to render React elements to DOM?', options:['ReactDOM.render()','React.render()','DOM.render()','render()'], answer:0, category:'frontend', explanation:'ReactDOM.render() renders to DOM.'},
+{q:'What is Virtual DOM?', options:['A lightweight copy of real DOM','A 3D version of DOM','A backup DOM','A simplified DOM'], answer:0, category:'frontend', explanation:'Virtual DOM is a lightweight copy.'},
+{q:'Which CSS property makes elements flexible?', options:['display: block','display: flex','display: inline','display: grid'], answer:1, category:'frontend', explanation:'display: flex enables flexbox.'},
+{q:'What does npm stand for?', options:['Node Package Manager','New Project Manager','Node Project Module','Network Package Management'], answer:0, category:'frontend', explanation:'npm stands for Node Package Manager.'},
+{q:'Which tool is used for JavaScript bundling?', options:['Webpack','Git','Docker','Jenkins'], answer:0, category:'frontend', explanation:'Webpack is a module bundler.'},
+{q:'What is TypeScript?', options:['A CSS framework','A JavaScript superset','A database','A testing tool'], answer:1, category:'frontend', explanation:'TypeScript is JavaScript with types.'},
+{q:'Which CSS framework uses utility classes?', options:['Bootstrap','Tailwind CSS','Foundation','Bulma'], answer:1, category:'frontend', explanation:'Tailwind uses utility-first classes.'},
+{q:'What is SASS?', options:['A JavaScript framework','A CSS preprocessor','A database','A build tool'], answer:1, category:'frontend', explanation:'SASS is a CSS preprocessor.'},
+{q:'Which method creates a new array with results of calling a function?', options:['map()','filter()','reduce()','forEach()'], answer:0, category:'frontend', explanation:'map() creates new array with results.'},
+{q:'What is the purpose of localStorage?', options:['Store data temporarily','Store data permanently','Store server data','Store CSS styles'], answer:1, category:'frontend', explanation:'localStorage stores data permanently.'},
+{q:'Which HTML5 feature allows offline web applications?', options:['Web Workers','Service Workers','Web Sockets','Local Storage'], answer:1, category:'frontend', explanation:'Service Workers enable offline functionality.'},
+{q:'What is CORS?', options:['A CSS framework','Cross-Origin Resource Sharing','A JavaScript library','A database protocol'], answer:1, category:'frontend', explanation:'CORS allows cross-origin requests.'},
+{q:'Which method makes HTTP requests in modern JavaScript?', options:['XMLHttpRequest','fetch()','ajax()','http()'], answer:1, category:'frontend', explanation:'fetch() is modern way for HTTP requests.'},
+{q:'What is a Promise in JavaScript?', options:['A type of variable','An object representing eventual completion','A function','A loop'], answer:1, category:'frontend', explanation:'Promise represents eventual completion.'},
+{q:'Which symbol is used for template literals?', options:['""','\'\'','``','<>'], answer:2, category:'frontend', explanation:'Backticks `` are for template literals.'},
+{q:'What does AJAX stand for?', options:['Asynchronous JavaScript and XML','Advanced JavaScript and XML','Asynchronous jQuery and XML','Advanced jQuery and XML'], answer:0, category:'frontend', explanation:'AJAX = Asynchronous JavaScript and XML.'},
+{q:'Which method prevents default event behavior?', options:['stopPropagation()','preventDefault()','stopDefault()','cancelEvent()'], answer:1, category:'frontend', explanation:'preventDefault() stops default behavior.'},
+{q:'What is Webpack?', options:['A testing framework','A module bundler','A database','A CSS framework'], answer:1, category:'frontend', explanation:'Webpack bundles JavaScript modules.'},
+{q:'Which method adds elements to beginning of array?', options:['push()','unshift()','shift()','pop()'], answer:1, category:'frontend', explanation:'unshift() adds to beginning.'},
+{q:'What is Babel?', options:['A CSS preprocessor','A JavaScript compiler','A database','A testing tool'], answer:1, category:'frontend', explanation:'Babel compiles modern JS to older versions.'},
+{q:'Which CSS property controls element positioning?', options:['display','position','float','align'], answer:1, category:'frontend', explanation:'position controls element positioning.'},
+{q:'What is the purpose of useEffect cleanup?', options:['Improve performance','Prevent memory leaks','Speed up rendering','Reduce bundle size'], answer:1, category:'frontend', explanation:'Cleanup prevents memory leaks.'},
+{q:'Which method converts object to JSON string?', options:['JSON.parse()','JSON.stringify()','JSON.convert()','JSON.toString()'], answer:1, category:'frontend', explanation:'JSON.stringify() converts to JSON.'},
+{q:'What is Redux?', options:['A database','A state management library','A CSS framework','A testing tool'], answer:1, category:'frontend', explanation:'Redux manages application state.'},
+{q:'Which hook manages state in React?', options:['useEffect','useState','useContext','useReducer'], answer:1, category:'frontend', explanation:'useState manages component state.'},
+{q:'What is the Virtual DOM advantage?', options:['Faster updates','Smaller file size','Better security','Easier debugging'], answer:0, category:'frontend', explanation:'Virtual DOM enables faster updates.'},
+{q:'Which CSS unit is relative to font size?', options:['px','em','cm','pt'], answer:1, category:'frontend', explanation:'em is relative to font size.'},
+{q:'What is a React component?', options:['A function or class that returns UI','A database table','A CSS file','A JavaScript variable'], answer:0, category:'frontend', explanation:'Component returns UI elements.'},
+{q:'Which method finds first element that satisfies condition?', options:['filter()','find()','search()','locate()'], answer:1, category:'frontend', explanation:'find() returns first matching element.'},
+{q:'What is JSX syntax similar to?', options:['Python','HTML','SQL','Java'], answer:1, category:'frontend', explanation:'JSX looks similar to HTML.'},
+{q:'Which CSS property creates flexible layouts?', options:['display: block','display: grid','display: flex','display: inline'], answer:2, category:'frontend', explanation:'display: flex creates flexible layouts.'},
+{q:'What is the purpose of React Router?', options:['State management','Routing','Styling','Testing'], answer:1, category:'frontend', explanation:'React Router handles navigation.'},
+{q:'Which method creates a new React element?', options:['React.createElement()','React.newElement()','React.makeElement()','React.element()'], answer:0, category:'frontend', explanation:'React.createElement() creates elements.'},
+{q:'What is a higher-order component?', options:['A component that takes components','A database component','A CSS component','A testing component'], answer:0, category:'frontend', explanation:'HOC takes components as input.'},
+{q:'Which CSS feature allows responsive design?', options:['Media queries','Variables','Animations','Transforms'], answer:0, category:'frontend', explanation:'Media queries enable responsive design.'},
+{q:'What is the purpose of useCallback?', options:['Memoize functions','Manage state','Handle effects','Route pages'], answer:0, category:'frontend', explanation:'useCallback memoizes functions.'},
+{q:'Which method checks if array includes value?', options:['contains()','includes()','has()','find()'], answer:1, category:'frontend', explanation:'includes() checks for value presence.'},
+{q:'What is CSS-in-JS?', options:['Writing CSS in JavaScript','JavaScript in CSS','A database','A framework'], answer:0, category:'frontend', explanation:'CSS-in-JS writes CSS in JavaScript.'},
+{q:'Which hook accesses context in React?', options:['useState','useEffect','useContext','useReducer'], answer:2, category:'frontend', explanation:'useContext accesses context.'},
+{q:'What is the purpose of React Fragments?', options:['Group elements without wrapper','Improve performance','Add styling','Handle events'], answer:0, category:'frontend', explanation:'Fragments group without extra DOM nodes.'},
+{q:'Which method returns new array with filtered elements?', options:['map()','filter()','reduce()','forEach()'], answer:1, category:'frontend', explanation:'filter() returns filtered array.'},
+{q:'What is Next.js?', options:['A database','A React framework','A CSS library','A testing tool'], answer:1, category:'frontend', explanation:'Next.js is React framework for production.'},
+// =====================
+// BACKEND DEVELOPER QUESTIONS
+// =====================
+{q:'Which HTTP method is used to update a resource?', options:['GET','POST','PUT','TRACE'], answer:2, category:'backend', explanation:'PUT updates an existing resource.'},
+{q:'Which database is relational?', options:['MongoDB','MySQL','Redis','Cassandra'], answer:1, category:'backend', explanation:'MySQL is a relational database.'},
+{q:'What port does HTTP use?', options:['80','22','443','25'], answer:0, category:'backend', explanation:'Port 80 is used for HTTP.'},
+{q:'Node.js is built on which engine?', options:['V8','SpiderMonkey','Chakra','Nashorn'], answer:0, category:'backend', explanation:'Node.js uses Google’s V8 engine.'},
+{q:'Which format is commonly used for APIs?', options:['CSV','TXT','JSON','DOC'], answer:2, category:'backend', explanation:'JSON is the standard format for APIs.'},
+{q:'Which SQL statement is used to extract data?', options:['GET','EXTRACT','SELECT','OPEN'], answer:2, category:'backend', explanation:'SELECT retrieves data from a database.'},
+{q:'Which HTTP status code means Not Found?', options:['200','301','404','500'], answer:2, category:'backend', explanation:'404 means Not Found.'},
+{q:'Which is a NoSQL database?', options:['MySQL','Postgres','MongoDB','SQLite'], answer:2, category:'backend', explanation:'MongoDB is a popular NoSQL DB.'},
+{q:'What does API stand for?', options:['Application Programming Interface','Applied Program Interface','Advanced Programming Input','Application Program Internet'], answer:0, category:'backend', explanation:'API stands for Application Programming Interface.'},
+{q:'Which HTTP method creates resources?', options:['GET','POST','PUT','DELETE'], answer:1, category:'backend', explanation:'POST is used to create resources.'},
+{q:'What is Node.js?', options:['A JavaScript framework','A JavaScript runtime','A database','A CSS preprocessor'], answer:1, category:'backend', explanation:'Node.js is a JavaScript runtime.'},
+{q:'Which database is relational?', options:['MongoDB','Redis','MySQL','Cassandra'], answer:2, category:'backend', explanation:'MySQL is a relational database.'},
+{q:'What is Express.js?', options:['A database','A web framework for Node.js','A CSS framework','A testing tool'], answer:1, category:'backend', explanation:'Express.js is Node.js web framework.'},
+{q:'Which HTTP method updates resources?', options:['GET','POST','PUT','DELETE'], answer:2, category:'backend', explanation:'PUT updates existing resources.'},
+{q:'What is REST?', options:['A programming language','An architectural style','A database','A framework'], answer:1, category:'backend', explanation:'REST is an architectural style for APIs.'},
+{q:'Which SQL clause filters results?', options:['FILTER','WHERE','HAVING','CONDITION'], answer:1, category:'backend', explanation:'WHERE filters query results.'},
+{q:'What is JWT?', options:['A database','JSON Web Token for authentication','A CSS framework','A testing tool'], answer:1, category:'backend', explanation:'JWT is for authentication.'},
+{q:'Which tool is used for containerization?', options:['Webpack','Docker','Git','NPM'], answer:1, category:'backend', explanation:'Docker is for containerization.'},
+{q:'What is GraphQL?', options:['A database','A query language for APIs','A CSS framework','A programming language'], answer:1, category:'backend', explanation:'GraphQL is API query language.'},
+{q:'Which HTTP status means success?', options:['200','400','404','500'], answer:0, category:'backend', explanation:'200 means OK/success.'},
+{q:'What is middleware?', options:['A database','Software between OS and applications','A CSS framework','A testing tool'], answer:1, category:'backend', explanation:'Middleware connects software components.'},
+{q:'Which database is key-value store?', options:['MySQL','Redis','MongoDB','PostgreSQL'], answer:1, category:'backend', explanation:'Redis is key-value store.'},
+{q:'What is ORM?', options:['Object-Relational Mapping','Object-Random Memory','Online Resource Management','Object-Runtime Module'], answer:0, category:'backend', explanation:'ORM maps objects to databases.'},
+{q:'Which HTTP method is idempotent?', options:['POST','GET','PATCH','UPDATE'], answer:1, category:'backend', explanation:'GET is idempotent (same result multiple times).'},
+{q:'What is microservices architecture?', options:['Small independent services','A large monolithic app','A database architecture','A testing strategy'], answer:0, category:'backend', explanation:'Microservices are small, independent services.'},
+{q:'Which SQL command modifies data?', options:['UPDATE','SELECT','QUERY','FIND'], answer:0, category:'backend', explanation:'UPDATE modifies existing data.'},
+{q:'What is load balancing?', options:['Distributing network traffic','A database technique','A CSS method','A testing approach'], answer:0, category:'backend', explanation:'Load balancing distributes traffic.'},
+{q:'Which is a message broker?', options:['Redis','RabbitMQ','MongoDB','MySQL'], answer:1, category:'backend', explanation:'RabbitMQ is a message broker.'},
+{q:'What is database indexing?', options:['Improving query performance','A security feature','A backup method','A replication technique'], answer:0, category:'backend', explanation:'Indexing speeds up queries.'},
+{q:'Which protocol is used for email?', options:['HTTP','FTP','SMTP','TCP'], answer:2, category:'backend', explanation:'SMTP is for email transmission.'},
+{q:'What is OAuth?', options:['A database','An authorization framework','A programming language','A CSS framework'], answer:1, category:'backend', explanation:'OAuth is for authorization.'},
+{q:'Which database ensures ACID properties?', options:['MongoDB','Redis','PostgreSQL','Cassandra'], answer:2, category:'backend', explanation:'PostgreSQL ensures ACID compliance.'},
+{q:'What is serverless architecture?', options:['No servers used','Cloud provider manages servers','No backend needed','Static hosting only'], answer:1, category:'backend', explanation:'Cloud provider manages server infrastructure.'},
+{q:'Which is a caching solution?', options:['MySQL','Redis','PostgreSQL','MongoDB'], answer:1, category:'backend', explanation:'Redis is often used for caching.'},
+{q:'What is database normalization?', options:['Organizing data to reduce redundancy','Speeding up queries','Adding indexes','Creating backups'], answer:0, category:'backend', explanation:'Normalization reduces data redundancy.'},
+{q:'Which HTTP header identifies client?', options:['User-Agent','Content-Type','Authorization','Accept'], answer:0, category:'backend', explanation:'User-Agent identifies the client.'},
+{q:'What is WebSocket?', options:['A database protocol','A communication protocol','A CSS feature','A testing tool'], answer:1, category:'backend', explanation:'WebSocket enables real-time communication.'},
+{q:'Which SQL command creates tables?', options:['MAKE TABLE','CREATE TABLE','NEW TABLE','BUILD TABLE'], answer:1, category:'backend', explanation:'CREATE TABLE makes new tables.'},
+{q:'What is database replication?', options:['Copying data to multiple servers','Backing up data','Compressing data','Encrypting data'], answer:0, category:'backend', explanation:'Replication copies data across servers.'},
+{q:'Which is a search engine?', options:['Redis','Elasticsearch','MySQL','PostgreSQL'], answer:1, category:'backend', explanation:'Elasticsearch is a search engine.'},
+{q:'What is API rate limiting?', options:['Controlling request frequency','Speeding up APIs','Securing databases','Caching responses'], answer:0, category:'backend', explanation:'Rate limiting controls request rates.'},
+{q:'Which database is document-based?', options:['MySQL','MongoDB','Redis','PostgreSQL'], answer:1, category:'backend', explanation:'MongoDB stores document data.'},
+{q:'What is database sharding?', options:['Horizontal partitioning of data','Vertical partitioning','Data encryption','Data compression'], answer:0, category:'backend', explanation:'Sharding partitions data horizontally.'},
+{q:'Which protocol is stateless?', options:['HTTP','FTP','SMTP','TCP'], answer:0, category:'backend', explanation:'HTTP is stateless by design.'},
+{q:'What is database transaction?', options:['A single logical operation','A query','A table','An index'], answer:0, category:'backend', explanation:'Transaction is a logical unit of work.'},
+{q:'Which tool manages dependencies in Node.js?', options:['Webpack','NPM','Docker','Git'], answer:1, category:'backend', explanation:'NPM manages Node.js packages.'},
+{q:'What is CORS in web APIs?', options:['Cross-Origin Resource Sharing','A database','A framework','A programming language'], answer:0, category:'backend', explanation:'CORS enables cross-origin requests.'},
+{q:'Which database ensures consistency?', options:['Redis','MongoDB','PostgreSQL','Cassandra'], answer:2, category:'backend', explanation:'PostgreSQL ensures strong consistency.'},
+{q:'What is server-side rendering?', options:['Rendering on client','Rendering on server','No rendering','Hybrid rendering'], answer:1, category:'backend', explanation:'Server-side rendering generates HTML on server.'},
+{q:'Which is a GraphQL client?', options:['Express.js','Apollo Client','Django','Spring Boot'], answer:1, category:'backend', explanation:'Apollo Client is for GraphQL.'},
+{q:'What is database connection pooling?', options:['Reusing database connections','Creating new connections','Closing connections','Monitoring connections'], answer:0, category:'backend', explanation:'Pooling reuses connections for efficiency.'},
+{q:'Which HTTP method is safe?', options:['POST','PUT','DELETE','GET'], answer:3, category:'backend', explanation:'GET is safe (no server state change).'},
+{q:'What is API versioning?', options:['Managing different API versions','Speeding up APIs','Securing APIs','Testing APIs'], answer:0, category:'backend', explanation:'Versioning manages API changes.'},
+{q:'Which is a Python web framework?', options:['Express.js','Django','Spring Boot','Laravel'], answer:1, category:'backend', explanation:'Django is Python web framework.'},
+{q:'What is database migration?', options:['Managing schema changes','Moving databases','Backing up data','Replicating data'], answer:0, category:'backend', explanation:'Migration manages database schema changes.'},
+{q:'Which protocol is for file transfer?', options:['HTTP','FTP','SMTP','TCP'], answer:1, category:'backend', explanation:'FTP is for file transfer.'},
+{q:'What is container orchestration?', options:['Managing containers','Creating containers','Testing containers','Monitoring containers'], answer:0, category:'backend', explanation:'Orchestration manages container lifecycle.'},
+{q:'Which is a Java framework?', options:['Django','Spring Boot','Express.js','Laravel'], answer:1, category:'backend', explanation:'Spring Boot is Java framework.'},
+{q:'What is database trigger?', options:['Code that runs on database events','A query','A table','An index'], answer:0, category:'backend', explanation:'Trigger runs automatically on events.'},
+{q:'Which tool is for infrastructure as code?', options:['Docker','Terraform','Kubernetes','Nginx'], answer:1, category:'backend', explanation:'Terraform manages infrastructure as code.'},
+{q:'What is API gateway?', options:['Single entry point for APIs','A database','A framework','A programming language'], answer:0, category:'backend', explanation:'API gateway routes API requests.'},
+{q:'Which database is column-family?', options:['MySQL','Cassandra','MongoDB','Redis'], answer:1, category:'backend', explanation:'Cassandra is column-family database.'},
+{q:'What is database view?', options:['Virtual table based on query','Physical table','Index','Trigger'], answer:0, category:'backend', explanation:'View is virtual table from query.'},
+{q:'Which is a PHP framework?', options:['Django','Spring Boot','Laravel','Express.js'], answer:2, category:'backend', explanation:'Laravel is PHP framework.'},
+{q:'What is database deadlock?', options:['Two transactions blocking each other','A fast query','A backup','A replication'], answer:0, category:'backend', explanation:'Deadlock occurs when transactions block each other.'},
+{q:'Which protocol ensures reliable delivery?', options:['HTTP','TCP','UDP','FTP'], answer:1, category:'backend', explanation:'TCP ensures reliable data delivery.'},
+{q:'What is database cursor?', options:['Database object to traverse results','A query','A table','An index'], answer:0, category:'backend', explanation:'Cursor traverses database results.'},
+{q:'Which is a .NET framework?', options:['Django','Spring Boot','ASP.NET','Laravel'], answer:2, category:'backend', explanation:'ASP.NET is Microsoft framework.'},
+{q:'What is database constraint?', options:['Rule enforcing data integrity','A query','A table','An index'], answer:0, category:'backend', explanation:'Constraint enforces data rules.'},
+{q:'Which tool monitors applications?', options:['Prometheus','Terraform','Docker','Kubernetes'], answer:0, category:'backend', explanation:'Prometheus is for monitoring.'},
+// =============================
+// FULLSTACK DEVELOPER QUESTIONS
+// =============================
+{q:'Which stack includes MongoDB, Express, React, Node?', options:['MERN','LAMP','Django Stack','Ruby Stack'], answer:0, category:'fullstack', explanation:'MERN = MongoDB + Express + React + Node.'},
+{q:'Which protocol is used for secure communication?', options:['HTTP','FTP','HTTPS','SSH'], answer:2, category:'fullstack', explanation:'HTTPS is HTTP over TLS/SSL.'},
+{q:'Which tool installs project dependencies?', options:['Git','NPM','Docker','Postman'], answer:1, category:'fullstack', explanation:'NPM installs and manages dependencies.'},
+{q:'Which is a backend language?', options:['HTML','CSS','JavaScript','PHP'], answer:3, category:'fullstack', explanation:'PHP is a backend scripting language.'},
+{q:'What is REST in APIs?', options:['Remote Execution','Representational State Transfer','Runtime System Transfer','Rapid Endpoint Service'], answer:1, category:'fullstack', explanation:'REST is a software architectural style.'},
+{q:'What is MERN stack?', options:['MySQL, Express, React, Node','MongoDB, Express, React, Node','MongoDB, Ember, React, Node','MySQL, Ember, React, Node'], answer:1, category:'fullstack', explanation:'MERN = MongoDB, Express, React, Node.js'},
+{q:'Which tool is used for version control?', options:['Docker','Git','Jenkins','Webpack'], answer:1, category:'fullstack', explanation:'Git is a distributed version control system.'},
+{q:'What is the purpose of package.json?', options:['Store project metadata and dependencies','Store CSS styles','Store database credentials','Store HTML templates'], answer:0, category:'fullstack', explanation:'package.json stores project info and dependencies.'},
+{q:'Which command installs npm packages?', options:['npm install','npm start','npm run','npm build'], answer:0, category:'fullstack', explanation:'npm install installs packages.'},
+{q:'What is WebSocket used for?', options:['Real-time communication','Database queries','CSS styling','File storage'], answer:0, category:'fullstack', explanation:'WebSocket enables real-time bidirectional communication.'},
+{q:'Which database is commonly used with Node.js?', options:['Oracle','MongoDB','SQL Server','DB2'], answer:1, category:'fullstack', explanation:'MongoDB is popular with Node.js applications.'},
+{q:'What is the purpose of middleware in Express.js?', options:['Handle requests and responses','Style pages','Store data','Render templates'], answer:0, category:'fullstack', explanation:'Middleware processes requests before reaching routes.'},
+{q:'Which React hook manages side effects?', options:['useState','useEffect','useContext','useReducer'], answer:1, category:'fullstack', explanation:'useEffect handles side effects like API calls.'},
+{q:'What is JWT used for?', options:['Styling','Authentication','Database queries','File uploads'], answer:1, category:'fullstack', explanation:'JWT (JSON Web Token) is for authentication.'},
+{q:'Which method makes HTTP requests in JavaScript?', options:['XMLHttpRequest','fetch()','Both A and B','Neither A nor B'], answer:2, category:'fullstack', explanation:'Both XMLHttpRequest and fetch() make HTTP requests.'},
+{q:'What is CORS?', options:['A database','Cross-Origin Resource Sharing','A CSS framework','A JavaScript library'], answer:1, category:'fullstack', explanation:'CORS allows cross-origin requests.'},
+{q:'Which command starts a React development server?', options:['npm start','npm install','npm build','npm test'], answer:0, category:'fullstack', explanation:'npm start runs the development server.'},
+{q:'What is the purpose of React Router?', options:['State management','Client-side routing','Server-side rendering','Database queries'], answer:1, category:'fullstack', explanation:'React Router handles navigation in React apps.'},
+{q:'Which database is NoSQL?', options:['MySQL','PostgreSQL','MongoDB','SQLite'], answer:2, category:'fullstack', explanation:'MongoDB is a document-based NoSQL database.'},
+{q:'What is the purpose of useEffect cleanup?', options:['Prevent memory leaks','Improve performance','Reduce bundle size','Speed up rendering'], answer:0, category:'fullstack', explanation:'Cleanup function prevents memory leaks.'},
+{q:'Which HTTP method is used for login forms?', options:['GET','POST','PUT','DELETE'], answer:1, category:'fullstack', explanation:'POST is used for form submissions like login.'},
+{q:'What is Redux used for?', options:['State management','Routing','Styling','Database queries'], answer:0, category:'fullstack', explanation:'Redux manages application state.'},
+{q:'Which tool bundles JavaScript modules?', options:['Webpack','Git','Docker','Nginx'], answer:0, category:'fullstack', explanation:'Webpack bundles JavaScript modules.'},
+{q:'What is the purpose of environment variables?', options:['Store configuration settings','Store CSS styles','Store HTML content','Store JavaScript functions'], answer:0, category:'fullstack', explanation:'Environment variables store config settings.'},
+{q:'Which React feature improves performance?', options:['Virtual DOM','JSX','Components','Hooks'], answer:0, category:'fullstack', explanation:'Virtual DOM enables efficient updates.'},
+{q:'What is the purpose of async/await?', options:['Handle asynchronous operations','Style components','Query databases','Render templates'], answer:0, category:'fullstack', explanation:'async/await simplifies asynchronous code.'},
+{q:'Which database ensures ACID properties?', options:['MongoDB','Redis','PostgreSQL','Cassandra'], answer:2, category:'fullstack', explanation:'PostgreSQL ensures ACID compliance.'},
+{q:'What is the purpose of CSS Grid?', options:['Two-dimensional layouts','One-dimensional layouts','Animations','Transforms'], answer:0, category:'fullstack', explanation:'CSS Grid creates two-dimensional layouts.'},
+{q:'Which method adds items to an array?', options:['push()','pop()','shift()','unshift()'], answer:0, category:'fullstack', explanation:'push() adds items to end of array.'},
+{q:'What is the purpose of Docker?', options:['Containerization','Version control','Package management','Testing'], answer:0, category:'fullstack', explanation:'Docker packages applications into containers.'},
+{q:'Which React hook manages local state?', options:['useState','useEffect','useContext','useReducer'], answer:0, category:'fullstack', explanation:'useState manages component state.'},
+{q:'What is the purpose of Nginx?', options:['Web server and reverse proxy','Database','CSS framework','JavaScript library'], answer:0, category:'fullstack', explanation:'Nginx is a web server and reverse proxy.'},
+{q:'Which database operation is fastest?', options:['Read from memory','Read from disk','Write to disk','Network request'], answer:0, category:'fullstack', explanation:'Reading from memory is fastest.'},
+{q:'What is the purpose of PM2?', options:['Process manager for Node.js','Package manager','Database manager','CSS preprocessor'], answer:0, category:'fullstack', explanation:'PM2 manages Node.js application processes.'},
+{q:'Which method creates new React components?', options:['React.createElement()','React.newComponent()','React.makeComponent()','React.component()'], answer:0, category:'fullstack', explanation:'React.createElement() creates elements.'},
+{q:'What is the purpose of WebSockets?', options:['Real-time bidirectional communication','Database queries','File storage','CSS styling'], answer:0, category:'fullstack', explanation:'WebSockets enable real-time communication.'},
+{q:'Which database is in-memory?', options:['MySQL','Redis','MongoDB','PostgreSQL'], answer:1, category:'fullstack', explanation:'Redis is an in-memory data store.'},
+{q:'What is the purpose of Babel?', options:['JavaScript compiler','CSS preprocessor','Package manager','Testing framework'], answer:0, category:'fullstack', explanation:'Babel compiles modern JavaScript.'},
+{q:'Which method handles form submissions?', options:['onSubmit','onClick','onChange','onLoad'], answer:0, category:'fullstack', explanation:'onSubmit handles form submission events.'},
+{q:'What is the purpose of Kubernetes?', options:['Container orchestration','Package management','Version control','Testing'], answer:0, category:'fullstack', explanation:'Kubernetes orchestrates containers.'},
+{q:'Which React feature enables code splitting?', options:['React.lazy()','React.memo()','React.fragment','React.portal'], answer:0, category:'fullstack', explanation:'React.lazy() enables code splitting.'},
+{q:'What is the purpose of GraphQL?', options:['API query language','Database','CSS framework','JavaScript library'], answer:0, category:'fullstack', explanation:'GraphQL is a query language for APIs.'},
+{q:'Which database is document-based?', options:['MySQL','MongoDB','Redis','PostgreSQL'], answer:1, category:'fullstack', explanation:'MongoDB stores data as documents.'},
+{q:'What is the purpose of ESLint?', options:['Code linting','Package management','Testing','Containerization'], answer:0, category:'fullstack', explanation:'ESLint finds and fixes code problems.'},
+{q:'Which method prevents default form behavior?', options:['preventDefault()','stopPropagation()','stopDefault()','cancelEvent()'], answer:0, category:'fullstack', explanation:'preventDefault() stops default behavior.'},
+{q:'What is the purpose of Axios?', options:['HTTP client','CSS framework','Database','Testing tool'], answer:0, category:'fullstack', explanation:'Axios makes HTTP requests.'},
+{q:'Which React pattern improves performance?', options:['Memoization','Inheritance','Polymorphism','Encapsulation'], answer:0, category:'fullstack', explanation:'Memoization caches component results.'},
+{q:'What is the purpose of Passport.js?', options:['Authentication middleware','CSS framework','Database','Testing tool'], answer:0, category:'fullstack', explanation:'Passport.js handles authentication.'},
+{q:'Which database ensures consistency?', options:['MongoDB','Redis','PostgreSQL','Cassandra'], answer:2, category:'fullstack', explanation:'PostgreSQL ensures strong consistency.'},
+{q:'What is the purpose of Helmet.js?', options:['Security middleware','CSS framework','Database','Testing tool'], answer:0, category:'fullstack', explanation:'Helmet.js secures Express apps.'},
+{q:'Which method creates database indexes?', options:['CREATE INDEX','MAKE INDEX','NEW INDEX','BUILD INDEX'], answer:0, category:'fullstack', explanation:'CREATE INDEX creates database indexes.'},
+{q:'What is the purpose of Storybook?', options:['UI component development','Database management','Package management','Testing'], answer:0, category:'fullstack', explanation:'Storybook develops UI components in isolation.'},
+{q:'Which database operation is most expensive?', options:['Full table scan','Indexed read','Primary key lookup','Memory read'], answer:0, category:'fullstack', explanation:'Full table scans are most expensive.'},
+{q:'What is the purpose of Cypress?', options:['End-to-end testing','Package management','Database management','CSS preprocessing'], answer:0, category:'fullstack', explanation:'Cypress is for end-to-end testing.'},
+{q:'Which React feature shares state?', options:['Context API','Components','Hooks','JSX'], answer:0, category:'fullstack', explanation:'Context API shares state across components.'},
+{q:'What is the purpose of Mongoose?', options:['MongoDB object modeling','CSS framework','Testing tool','Package manager'], answer:0, category:'fullstack', explanation:'Mongoose models MongoDB data.'},
+{q:'Which method optimizes React components?', options:['React.memo()','React.lazy()','React.fragment','React.portal'], answer:0, category:'fullstack', explanation:'React.memo() memoizes components.'},
+{q:'What is the purpose of Socket.IO?', options:['Real-time communication','Database','CSS framework','Testing tool'], answer:0, category:'fullstack', explanation:'Socket.IO enables real-time bidirectional communication.'},
+{q:'Which database is graph-based?', options:['MySQL','Neo4j','MongoDB','Redis'], answer:1, category:'fullstack', explanation:'Neo4j is a graph database.'},
+{q:'What is the purpose of Prettier?', options:['Code formatting','Package management','Testing','Containerization'], answer:0, category:'fullstack', explanation:'Prettier formats code automatically.'},
+{q:'Which method handles errors in promises?', options:['catch()','then()','finally()','error()'], answer:0, category:'fullstack', explanation:'catch() handles promise rejections.'},
+{q:'What is the purpose of Next.js?', options:['React framework','CSS framework','Database','Testing tool'], answer:0, category:'fullstack', explanation:'Next.js is React framework for production.'},
+{q:'Which database is time-series?', options:['MySQL','InfluxDB','MongoDB','Redis'], answer:1, category:'fullstack', explanation:'InfluxDB is for time-series data.'},
+{q:'What is the purpose of TypeScript?', options:['JavaScript with types','CSS framework','Database','Testing tool'], answer:0, category:'fullstack', explanation:'TypeScript adds types to JavaScript.'},
+{q:'Which method debounces functions?', options:['setTimeout','setInterval','requestAnimationFrame','clearTimeout'], answer:0, category:'fullstack', explanation:'setTimeout can implement debouncing.'},
+{q:'What is the purpose of Docker Compose?', options:['Multi-container applications','Single containers','Package management','Testing'], answer:0, category:'fullstack', explanation:'Docker Compose manages multi-container apps.'},
+{q:'Which database is NewSQL?', options:['MySQL','CockroachDB','MongoDB','Redis'], answer:1, category:'fullstack', explanation:'CockroachDB is a NewSQL database.'},
+{q:'What is the purpose of React Testing Library?', options:['Testing React components','Package management','Database management','CSS preprocessing'], answer:0, category:'fullstack', explanation:'React Testing Library tests React components.'},
+{q:'Which method throttles functions?', options:['setTimeout','setInterval','requestAnimationFrame','clearTimeout'], answer:1, category:'fullstack', explanation:'setInterval can implement throttling.'},
+{q:'What is the purpose of Terraform?', options:['Infrastructure as code','Package management','Testing','Containerization'], answer:0, category:'fullstack', explanation:'Terraform manages infrastructure as code.'},
+// =====================
+// PYTHON QUESTIONS
+// =====================
+{q:'Which keyword defines a function in Python?', options:['func','method','def','function'], answer:2, category:'python', explanation:'Python uses def to declare functions.'},
+{q:'Which type does Python use?', options:['Statically typed','Dynamically typed','Manually typed','Hybrid typed'], answer:1, category:'python', explanation:'Python is dynamically typed.'},
+{q:'Which library is used for data analysis?', options:['Flask','NumPy','Pandas','Django'], answer:2, category:'python', explanation:'Pandas is used for data manipulation.'},
+{q:'What is used for virtual environments?', options:['pip','npm','venv','docker'], answer:2, category:'python', explanation:'venv creates isolated Python environments.'},
+{q:'Which symbol is used for comments?', options:['//','#','<!-- -->','**'], answer:1, category:'python', explanation:'Python uses # for comments.'},
+{q:'What is Python?', options:['A snake','A programming language','A database','A CSS framework'], answer:1, category:'python', explanation:'Python is a high-level programming language.'},
+{q:'Which symbol starts comments in Python?', options:['//','#','/*','--'], answer:1, category:'python', explanation:'# starts single-line comments in Python.'},
+{q:'How do you create a list in Python?', options:['list = ()','list = []','list = <>','list = {}'], answer:1, category:'python', explanation:'Lists use square brackets [].'},
+{q:'Which method adds items to a list?', options:['add()','append()','insert()','push()'], answer:1, category:'python', explanation:'append() adds items to lists.'},
+{q:'What is the output of print(2**3)?', options:['6','8','9','5'], answer:1, category:'python', explanation:'** is exponentiation operator (2^3=8).'},
+{q:'How do you define a function in Python?', options:['function my_func():','def my_func():','func my_func():','define my_func():'], answer:1, category:'python', explanation:'def keyword defines functions.'},
+{q:'Which data type is mutable?', options:['tuple','string','list','int'], answer:2, category:'python', explanation:'Lists are mutable (can be changed).'},
+{q:'What does len() function do?', options:['Returns length','Returns largest element','Returns smallest element','Returns sum'], answer:0, category:'python', explanation:'len() returns the length of objects.'},
+{q:'How do you open a file in Python?', options:['open_file()','file.open()','open()','File.open()'], answer:2, category:'python', explanation:'open() function opens files.'},
+{q:'Which loop goes through a sequence?', options:['for loop','while loop','do-while loop','repeat loop'], answer:0, category:'python', explanation:'for loop iterates over sequences.'},
+{q:'What is the output of "hello"[1:4]?', options:['hell','ello','ell','hel'], answer:2, category:'python', explanation:'Slicing returns characters from index 1 to 3.'},
+{q:'How do you import a module?', options:['import module','include module','require module','load module'], answer:0, category:'python', explanation:'import keyword imports modules.'},
+{q:'Which method removes list items?', options:['delete()','remove()','pop()','Both B and C'], answer:3, category:'python', explanation:'remove() and pop() remove items.'},
+{q:'What does range(5) generate?', options:['[0,1,2,3,4]','[1,2,3,4,5]','[0,1,2,3,4,5]','[1,2,3,4]'], answer:0, category:'python', explanation:'range(5) generates 0 to 4.'},
+{q:'How do you handle exceptions?', options:['try-catch','try-except','try-rescue','try-handle'], answer:1, category:'python', explanation:'try-except handles exceptions.'},
+{q:'Which is a Python web framework?', options:['Django','Spring','Laravel','Express'], answer:0, category:'python', explanation:'Django is Python web framework.'},
+{q:'What is a dictionary?', options:['Key-value pairs','Ordered sequence','Unordered sequence','Single value'], answer:0, category:'python', explanation:'Dictionary stores key-value pairs.'},
+{q:'How do you create a class?', options:['class MyClass:','def MyClass:','new class MyClass:','create class MyClass:'], answer:0, category:'python', explanation:'class keyword creates classes.'},
+{q:'Which operator checks identity?', options:['==','is','=','==='], answer:1, category:'python', explanation:'is checks object identity.'},
+{q:'What does __init__ method do?', options:['Initializes object','Destroys object','Imports module','Exports module'], answer:0, category:'python', explanation:'__init__ initializes objects.'},
+{q:'How do you reverse a list?', options:['list.reverse()','reverse(list)','list[::-1]','Both A and C'], answer:3, category:'python', explanation:'reverse() and slicing reverse lists.'},
+{q:'Which module is for HTTP requests?', options:['requests','http','urllib','Both A and C'], answer:3, category:'python', explanation:'requests and urllib handle HTTP.'},
+{q:'What is a tuple?', options:['Mutable sequence','Immutable sequence','Key-value pairs','Single value'], answer:1, category:'python', explanation:'Tuple is immutable sequence.'},
+{q:'How do you install packages?', options:['pip install','npm install','python install','install package'], answer:0, category:'python', explanation:'pip installs Python packages.'},
+{q:'Which method splits strings?', options:['split()','divide()','separate()','break()'], answer:0, category:'python', explanation:'split() splits strings into lists.'},
+{q:'What is list comprehension?', options:['Creating lists concisely','Creating functions','Creating classes','Creating modules'], answer:0, category:'python', explanation:'List comprehension creates lists concisely.'},
+{q:'How do you read file contents?', options:['file.read()','read(file)','file.contents()','get(file)'], answer:0, category:'python', explanation:'read() reads file contents.'},
+{q:'Which is a Python ORM?', options:['SQLAlchemy','Hibernate','Sequelize','Mongoose'], answer:0, category:'python', explanation:'SQLAlchemy is Python ORM.'},
+{q:'What does @decorator do?', options:['Modifies functions','Creates classes','Imports modules','Exports modules'], answer:0, category:'python', explanation:'Decorators modify function behavior.'},
+{q:'How do you sort a list?', options:['list.sort()','sorted(list)','Both A and B','Neither A nor B'], answer:2, category:'python', explanation:'sort() and sorted() sort lists.'},
+{q:'Which module is for dates?', options:['datetime','time','date','Both A and B'], answer:3, category:'python', explanation:'datetime and time handle dates/times.'},
+{q:'What is a generator?', options:['Function that yields values','Function that returns values','Class that creates objects','Module that imports'], answer:0, category:'python', explanation:'Generator yields values one at a time.'},
+{q:'How do you handle JSON?', options:['json module','JSON class','jsonify function','parseJSON function'], answer:0, category:'python', explanation:'json module handles JSON data.'},
+{q:'Which is a testing framework?', options:['pytest','jtest','testpy','checkpy'], answer:0, category:'python', explanation:'pytest is Python testing framework.'},
+{q:'What is virtual environment?', options:['Isolated Python environment','Virtual machine','Docker container','Cloud environment'], answer:0, category:'python', explanation:'Virtual environment isolates dependencies.'},
+{q:'How do you create a set?', options:['set = {}','set = []','set = ()','set = set()'], answer:3, category:'python', explanation:'set() creates an empty set.'},
+{q:'Which method joins list elements?', options:['join()','concat()','combine()','merge()'], answer:0, category:'python', explanation:'join() joins list into string.'},
+{q:'What is lambda function?', options:['Anonymous function','Named function','Class method','Module function'], answer:0, category:'python', explanation:'Lambda creates anonymous functions.'},
+{q:'How do you copy a list?', options:['list.copy()','copy(list)','list[:]','All of the above'], answer:3, category:'python', explanation:'Multiple ways to copy lists exist.'},
+{q:'Which is a data analysis library?', options:['pandas','numpy','matplotlib','All of the above'], answer:3, category:'python', explanation:'All are data analysis libraries.'},
+{q:'What is __name__ variable?', options:['Module name','Function name','Class name','Variable name'], answer:0, category:'python', explanation:'__name__ contains module name.'},
+{q:'How do you handle command line arguments?', options:['sys.argv','argparse','getopt','All of the above'], answer:3, category:'python', explanation:'Multiple ways handle command line args.'},
+{q:'Which is a web scraping library?', options:['BeautifulSoup','Scrapy','Selenium','All of the above'], answer:3, category:'python', explanation:'All are web scraping tools.'},
+{q:'What is method overriding?', options:['Redefining parent method','Creating new method','Deleting method','Importing method'], answer:0, category:'python', explanation:'Overriding redefines parent methods.'},
+{q:'How do you create a package?', options:['Create __init__.py','Create package.py','Create main.py','Create setup.py'], answer:0, category:'python', explanation:'__init__.py makes a package.'},
+{q:'Which is a machine learning library?', options:['scikit-learn','tensorflow','pytorch','All of the above'], answer:3, category:'python', explanation:'All are ML libraries.'},
+{q:'What is duck typing?', options:['If it looks like a duck...','Strict typing','Dynamic typing','Static typing'], answer:0, category:'python', explanation:'Duck typing focuses on behavior not type.'},
+{q:'How do you measure execution time?', options:['timeit','datetime','time','Both A and C'], answer:3, category:'python', explanation:'timeit and time measure execution.'},
+{q:'Which is a GUI framework?', options:['Tkinter','PyQt','Kivy','All of the above'], answer:3, category:'python', explanation:'All are Python GUI frameworks.'},
+{q:'What is polymorphism?', options:['Same interface, different implementations','Same implementation','Different interfaces','No interface'], answer:0, category:'python', explanation:'Polymorphism allows different behaviors.'},
+{q:'How do you create a thread?', options:['threading.Thread()','thread.create()','new Thread()','Thread.new()'], answer:0, category:'python', explanation:'threading.Thread() creates threads.'},
+{q:'Which is a documentation tool?', options:['Sphinx','Doxygen','Javadoc','Both A and B'], answer:3, category:'python', explanation:'Sphinx and Doxygen document Python.'},
+{q:'What is inheritance?', options:['Deriving classes from parents','Creating new classes','Destroying classes','Importing classes'], answer:0, category:'python', explanation:'Inheritance derives from parent classes.'},
+{q:'How do you handle CSV files?', options:['csv module','pandas','Both A and B','Neither A nor B'], answer:2, category:'python', explanation:'csv module and pandas handle CSV.'},
+{q:'Which is a web framework?', options:['Flask','Django','FastAPI','All of the above'], answer:3, category:'python', explanation:'All are Python web frameworks.'},
+{q:'What is encapsulation?', options:['Bundling data and methods','Splitting data','Exporting data','Importing data'], answer:0, category:'python', explanation:'Encapsulation bundles data and methods.'},
+{q:'How do you create a context manager?', options:['with statement','contextlib','__enter__/__exit__','All of the above'], answer:3, category:'python', explanation:'Multiple ways create context managers.'},
+{q:'Which is a async framework?', options:['asyncio','aiohttp','tornado','All of the above'], answer:3, category:'python', explanation:'All support asynchronous programming.'},
+{q:'What is garbage collection?', options:['Automatic memory management','Manual memory management','Memory allocation','Memory deallocation'], answer:0, category:'python', explanation:'Garbage collection manages memory automatically.'},
+{q:'How do you create a coroutine?', options:['async def','def async','coroutine def','def coroutine'], answer:0, category:'python', explanation:'async def creates coroutines.'},
+{q:'Which is a package manager?', options:['pip','conda','poetry','All of the above'], answer:3, category:'python', explanation:'All are Python package managers.'},
+{q:'What is monkey patching?', options:['Modifying code at runtime','Creating new code','Deleting code','Importing code'], answer:0, category:'python', explanation:'Monkey patching modifies runtime behavior.'},
+{q:'How do you create a frozen set?', options:['frozenset()','frozen.set()','set.frozen()','freeze(set)'], answer:0, category:'python', explanation:'frozenset() creates immutable sets.'},
+{q:'Which is a deployment tool?', options:['Fabric','Ansible','Docker','All of the above'], answer:3, category:'python', explanation:'All can deploy Python applications.'},
+// =====================
+// MOBILE APP QUESTIONS
+// =====================
+{q:'Which language is used for Android?', options:['Swift','Kotlin','Objective-C','Go'], answer:1, category:'mobile', explanation:'Kotlin is the official Android language.'},
+{q:'Flutter is based on which language?', options:['Swift','Dart','Java','Python'], answer:1, category:'mobile', explanation:'Flutter uses the Dart language.'},
+{q:'Which OS runs Swift apps?', options:['Android','Windows','iOS','Linux'], answer:2, category:'mobile', explanation:'Swift apps run on iOS.'},
+{q:'React Native is used for what?', options:['Backend','Database','Mobile apps','Testing'], answer:2, category:'mobile', explanation:'React Native builds cross-platform mobile apps.'},
+{q:'APK stands for?', options:['Android Package','App Kit','Apple Key','Android Public Kit'], answer:0, category:'mobile', explanation:'APK means Android Package.'},
+{q:'Which mobile platform uses Swift?', options:['Android','iOS','Windows Phone','Blackberry'], answer:1, category:'mobile', explanation:'Swift is primarily for iOS development.'},
+{q:'What is React Native?', options:['A framework for building mobile apps using JavaScript','A database for mobile applications','A programming language for mobile development','A design tool for mobile interfaces'], answer:0, category:'mobile', explanation:'React Native builds mobile apps with JavaScript.'},
+{q:'Which language is used for native Android development?', options:['Swift','Kotlin','Objective-C','C#'], answer:1, category:'mobile', explanation:'Kotlin is modern Android development language.'},
+{q:'What is Flutter?', options:['Google\'s UI toolkit for natively compiled apps','A database','A programming language','A testing framework'], answer:0, category:'mobile', explanation:'Flutter is Google\'s cross-platform framework.'},
+{q:'Which tool builds iOS apps?', options:['Android Studio','Xcode','Visual Studio','Eclipse'], answer:1, category:'mobile', explanation:'Xcode is IDE for iOS development.'},
+{q:'What is an APK file?', options:['Android application package','Apple program kit','Application programming key','Automated process kit'], answer:0, category:'mobile', explanation:'APK is Android application package format.'},
+{q:'Which database is commonly used in mobile apps?', options:['SQLite','Oracle','SQL Server','DB2'], answer:0, category:'mobile', explanation:'SQLite is lightweight database for mobile.'},
+{q:'What is Firebase?', options:['Google\'s mobile development platform','A programming language','A CSS framework','A testing tool'], answer:0, category:'mobile', explanation:'Firebase provides backend services for mobile apps.'},
+{q:'Which method handles touch events?', options:['onTouch','onClick','onPress','onTap'], answer:0, category:'mobile', explanation:'onTouch handles touch interactions.'},
+{q:'What is responsive design in mobile?', options:['Adapting to different screen sizes','Making apps faster','Reducing app size','Improving security'], answer:0, category:'mobile', explanation:'Responsive design adapts to screen sizes.'},
+{q:'Which pattern is common in mobile architecture?', options:['MVC','REST','SOAP','GraphQL'], answer:0, category:'mobile', explanation:'MVC is common architectural pattern.'},
+{q:'What is push notification?', options:['Server-sent message to app','User-initiated message','App-to-app message','Device-to-device message'], answer:0, category:'mobile', explanation:'Push notifications are server-sent messages.'},
+{q:'Which tool builds Android apps?', options:['Xcode','Android Studio','Visual Studio','Eclipse'], answer:1, category:'mobile', explanation:'Android Studio is official Android IDE.'},
+{q:'What is hybrid mobile app?', options:['Web app in native container','Native app','Web app','Desktop app'], answer:0, category:'mobile', explanation:'Hybrid apps wrap web apps in native containers.'},
+{q:'Which language is used for Flutter?', options:['JavaScript','Dart','Python','Java'], answer:1, category:'mobile', explanation:'Flutter uses Dart programming language.'},
+{q:'What is mobile app store optimization?', options:['Improving app visibility in stores','Reducing app size','Speeding up apps','Securing apps'], answer:0, category:'mobile', explanation:'ASO improves app store visibility.'},
+{q:'Which method saves data locally?', options:['SharedPreferences','LocalStorage','SessionStorage','Cookies'], answer:0, category:'mobile', explanation:'SharedPreferences stores data locally in Android.'},
+{q:'What is mobile app prototyping?', options:['Creating app mockups','Writing code','Testing apps','Deploying apps'], answer:0, category:'mobile', explanation:'Prototyping creates app mockups and designs.'},
+{q:'Which tool tests mobile apps?', options:['Appium','Selenium','JUnit','Mocha'], answer:0, category:'mobile', explanation:'Appium automates mobile app testing.'},
+{q:'What is mobile app security?', options:['Protecting app data and users','Making apps faster','Reducing app size','Improving design'], answer:0, category:'mobile', explanation:'Mobile security protects data and users.'},
+{q:'Which method handles app permissions?', options:['requestPermissions','getPermissions','checkPermissions','allowPermissions'], answer:0, category:'mobile', explanation:'requestPermissions handles runtime permissions.'},
+{q:'What is mobile app analytics?', options:['Tracking app usage and behavior','Testing apps','Designing apps','Developing apps'], answer:0, category:'mobile', explanation:'Analytics tracks user behavior and app usage.'},
+{q:'Which pattern handles navigation?', options:['Router pattern','Factory pattern','Singleton pattern','Observer pattern'], answer:0, category:'mobile', explanation:'Router pattern handles app navigation.'},
+{q:'What is mobile app performance?', options:['App speed and responsiveness','App design','App security','App features'], answer:0, category:'mobile', explanation:'Performance measures app speed and responsiveness.'},
+{q:'Which method handles background tasks?', options:['WorkManager','TaskManager','JobScheduler','Both A and C'], answer:3, category:'mobile', explanation:'WorkManager and JobScheduler handle background tasks.'},
+{q:'What is mobile app monetization?', options:['Generating revenue from apps','Developing apps','Testing apps','Designing apps'], answer:0, category:'mobile', explanation:'Monetization generates app revenue.'},
+{q:'Which tool designs mobile interfaces?', options:['Figma','Android Studio','Xcode','Visual Studio'], answer:0, category:'mobile', explanation:'Figma designs mobile app interfaces.'},
+{q:'What is mobile app accessibility?', options:['Making apps usable for everyone','Making apps faster','Reducing app size','Improving security'], answer:0, category:'mobile', explanation:'Accessibility ensures apps are usable by all.'},
+{q:'Which method handles network requests?', options:['HTTP client','Database client','File client','Storage client'], answer:0, category:'mobile', explanation:'HTTP client handles network requests.'},
+{q:'What is mobile app localization?', options:['Adapting app for different languages','Making apps faster','Reducing app size','Improving security'], answer:0, category:'mobile', explanation:'Localization adapts apps for languages/regions.'},
+{q:'Which pattern manages state?', options:['Redux pattern','MVC pattern','MVVM pattern','All of the above'], answer:3, category:'mobile', explanation:'Multiple patterns manage app state.'},
+{q:'What is mobile app testing?', options:['Ensuring app quality and functionality','Developing apps','Designing apps','Deploying apps'], answer:0, category:'mobile', explanation:'Testing ensures app quality and functionality.'},
+{q:'Which method handles user input?', options:['Text input fields','Buttons','Gestures','All of the above'], answer:3, category:'mobile', explanation:'Multiple methods handle user input.'},
+{q:'What is mobile app deployment?', options:['Releasing app to stores','Developing app','Testing app','Designing app'], answer:0, category:'mobile', explanation:'Deployment releases apps to stores.'},
+{q:'Which tool builds cross-platform apps?', options:['React Native','Flutter','Xamarin','All of the above'], answer:3, category:'mobile', explanation:'All build cross-platform mobile apps.'},
+{q:'What is mobile app maintenance?', options:['Updating and fixing apps','Developing apps','Testing apps','Designing apps'], answer:0, category:'mobile', explanation:'Maintenance updates and fixes apps.'},
+{q:'Which method stores data remotely?', options:['Cloud databases','Local databases','File storage','Memory storage'], answer:0, category:'mobile', explanation:'Cloud databases store data remotely.'},
+{q:'What is mobile app UX design?', options:['User experience design','User interface design','User testing','User development'], answer:0, category:'mobile', explanation:'UX design focuses on user experience.'},
+{q:'Which pattern handles data persistence?', options:['Repository pattern','Factory pattern','Singleton pattern','Observer pattern'], answer:0, category:'mobile', explanation:'Repository pattern handles data persistence.'},
+{q:'What is mobile app debugging?', options:['Finding and fixing errors','Developing apps','Testing apps','Designing apps'], answer:0, category:'mobile', explanation:'Debugging finds and fixes app errors.'},
+{q:'Which method handles app lifecycle?', options:['Lifecycle methods','Lifecycle functions','Lifecycle events','Lifecycle handlers'], answer:0, category:'mobile', explanation:'Lifecycle methods handle app states.'},
+{q:'What is mobile app architecture?', options:['App structure and organization','App design','App testing','App deployment'], answer:0, category:'mobile', explanation:'Architecture defines app structure.'},
+{q:'Which tool profiles app performance?', options:['Android Profiler','Xcode Instruments','Chrome DevTools','All of the above'], answer:3, category:'mobile', explanation:'Multiple tools profile app performance.'},
+{q:'What is mobile app beta testing?', options:['Testing with real users before launch','Testing during development','Testing after launch','Automated testing'], answer:0, category:'mobile', explanation:'Beta testing involves real users before launch.'},
+{q:'Which method handles app notifications?', options:['Notification managers','Message managers','Alert managers','Popup managers'], answer:0, category:'mobile', explanation:'Notification managers handle app notifications.'},
+{q:'What is mobile app onboarding?', options:['Guiding new users','Testing apps','Developing apps','Designing apps'], answer:0, category:'mobile', explanation:'Onboarding guides new app users.'},
+{q:'Which pattern handles API communication?', options:['Client-server pattern','Peer-to-peer pattern','Master-slave pattern','Client-client pattern'], answer:0, category:'mobile', explanation:'Client-server pattern handles API communication.'},
+{q:'What is mobile app analytics?', options:['Tracking user behavior','Testing apps','Developing apps','Designing apps'], answer:0, category:'mobile', explanation:'Analytics tracks user behavior and metrics.'},
+{q:'Which method handles app updates?', options:['In-app updates','Store updates','Manual updates','All of the above'], answer:3, category:'mobile', explanation:'Multiple methods handle app updates.'},
+{q:'What is mobile app security testing?', options:['Finding security vulnerabilities','Testing performance','Testing functionality','Testing design'], answer:0, category:'mobile', explanation:'Security testing finds vulnerabilities.'},
+{q:'Which tool builds progressive web apps?', options:['React','Vue','Angular','All of the above'], answer:3, category:'mobile', explanation:'All can build progressive web apps.'},
+{q:'What is mobile app user retention?', options:['Keeping users engaged','Getting new users','Testing apps','Developing apps'], answer:0, category:'mobile', explanation:'User retention keeps users engaged.'},
+{q:'Which method handles app sharing?', options:['Share APIs','Copy APIs','Paste APIs','Move APIs'], answer:0, category:'mobile', explanation:'Share APIs handle content sharing.'},
+{q:'What is mobile app A/B testing?', options:['Testing different versions','Testing performance','Testing security','Testing design'], answer:0, category:'mobile', explanation:'A/B testing compares different versions.'},
+{q:'Which pattern handles user authentication?', options:['Auth patterns','Security patterns','Login patterns','Access patterns'], answer:0, category:'mobile', explanation:'Auth patterns handle user authentication.'},
+{q:'What is mobile app crash reporting?', options:['Tracking app crashes','Testing apps','Developing apps','Designing apps'], answer:0, category:'mobile', explanation:'Crash reporting tracks app failures.'},
+{q:'Which method handles app permissions?', options:['Permission requests','Access requests','Security requests','Privacy requests'], answer:0, category:'mobile', explanation:'Permission requests handle app access.'},
+{q:'What is mobile app store listing?', options:['App presentation in stores','App development','App testing','App design'], answer:0, category:'mobile', explanation:'Store listing presents app in stores.'},
+{q:'Which tool builds native apps?', options:['Swift for iOS','Kotlin for Android','Both A and B','Neither A nor B'], answer:2, category:'mobile', explanation:'Swift and Kotlin build native apps.'},
+{q:'What is mobile app user feedback?', options:['User opinions and suggestions','App testing','App development','App design'], answer:0, category:'mobile', explanation:'User feedback collects user opinions.'},
+{q:'Which method handles app data sync?', options:['Sync adapters','Data adapters','File adapters','Network adapters'], answer:0, category:'mobile', explanation:'Sync adapters handle data synchronization.'},
+{q:'What is mobile app performance monitoring?', options:['Tracking app performance metrics','Testing apps','Developing apps','Designing apps'], answer:0, category:'mobile', explanation:'Performance monitoring tracks app metrics.'},
+{q:'Which pattern handles error management?', options:['Error handling patterns','Exception patterns','Failure patterns','Bug patterns'], answer:0, category:'mobile', explanation:'Error handling patterns manage errors.'},
+{q:'What is mobile app continuous integration?', options:['Automated building and testing','Manual testing','Manual development','Manual deployment'], answer:0, category:'mobile', explanation:'CI automates building and testing.'},
+// =====================
+// AI / ML QUESTIONS
+// =====================
+{q:'What is supervised learning?', options:['Learning without labels','Learning with labels','Random training','AI guessing'], answer:1, category:'ai_ml', explanation:'Supervised learning uses labeled data.'},
+{q:'Which algorithm is used for classification?', options:['K-Means','Linear Regression','Decision Tree','Apriori'], answer:2, category:'ai_ml', explanation:'Decision Trees classify data.'},
+{q:'Which library is used for ML in Python?', options:['TensorFlow','Bootstrap','Laravel','Express'], answer:0, category:'ai_ml', explanation:'TensorFlow is a deep learning library.'},
+{q:'What is a neural network inspired by?', options:['Cars','Biological brain','Computers','Physics'], answer:1, category:'ai_ml', explanation:'Neural networks mimic the human brain.'},
+{q:'Which concept prevents overfitting?', options:['Dropout','Looping','Padding','Batching'], answer:0, category:'ai_ml', explanation:'Dropout reduces overfitting.'},
+{q:'What is Machine Learning?', options:['AI that learns from data','AI that follows rules','AI that mimics humans','AI that plays games'], answer:0, category:'ai_ml', explanation:'ML learns patterns from data without explicit programming.'},
+{q:'Which algorithm is used for classification?', options:['Linear Regression','Logistic Regression','K-Means','PCA'], answer:1, category:'ai_ml', explanation:'Logistic Regression is for classification tasks.'},
+{q:'What is neural network?', options:['AI model inspired by brain','Database','Programming language','CSS framework'], answer:0, category:'ai_ml', explanation:'Neural networks mimic biological brains.'},
+{q:'Which library is for Python ML?', options:['scikit-learn','React','Django','Express'], answer:0, category:'ai_ml', explanation:'scikit-learn is Python ML library.'},
+{q:'What is supervised learning?', options:['Learning with labeled data','Learning without labels','Learning with rewards','Learning with punishments'], answer:0, category:'ai_ml', explanation:'Supervised learning uses labeled training data.'},
+{q:'Which algorithm finds clusters?', options:['K-Means','Linear Regression','Logistic Regression','Decision Trees'], answer:0, category:'ai_ml', explanation:'K-Means clustering finds groups in data.'},
+{q:'What is deep learning?', options:['ML with neural networks','ML with simple models','ML with rules','ML with databases'], answer:0, category:'ai_ml', explanation:'Deep learning uses multi-layer neural networks.'},
+{q:'Which framework is for deep learning?', options:['TensorFlow','scikit-learn','pandas','numpy'], answer:0, category:'ai_ml', explanation:'TensorFlow is deep learning framework.'},
+{q:'What is reinforcement learning?', options:['Learning through rewards/punishments','Learning with labels','Learning without data','Learning with rules'], answer:0, category:'ai_ml', explanation:'Reinforcement learning learns from environment feedback.'},
+{q:'Which technique prevents overfitting?', options:['Regularization','Overfitting','Underfitting','Training'], answer:0, category:'ai_ml', explanation:'Regularization prevents model overfitting.'},
+{q:'What is natural language processing?', options:['AI understanding human language','AI understanding code','AI understanding images','AI understanding sounds'], answer:0, category:'ai_ml', explanation:'NLP deals with human language understanding.'},
+{q:'Which algorithm is for regression?', options:['Linear Regression','Logistic Regression','K-Means','K-NN'], answer:0, category:'ai_ml', explanation:'Linear Regression predicts continuous values.'},
+{q:'What is computer vision?', options:['AI understanding images/videos','AI understanding text','AI understanding speech','AI understanding code'], answer:0, category:'ai_ml', explanation:'Computer vision processes visual information.'},
+{q:'Which method splits data?', options:['Train-test split','Data merge','Data join','Data combine'], answer:0, category:'ai_ml', explanation:'Train-test split divides data for training/testing.'},
+{q:'What is unsupervised learning?', options:['Learning without labels','Learning with labels','Learning with rewards','Learning with rules'], answer:0, category:'ai_ml', explanation:'Unsupervised learning finds patterns in unlabeled data.'},
+{q:'Which technique reduces dimensions?', options:['PCA','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'PCA reduces data dimensionality.'},
+{q:'What is overfitting?', options:['Model memorizes training data','Model generalizes well','Model underperforms','Model is too simple'], answer:0, category:'ai_ml', explanation:'Overfitting: model learns training data too well.'},
+{q:'Which metric evaluates classification?', options:['Accuracy','MSE','RMSE','R-squared'], answer:0, category:'ai_ml', explanation:'Accuracy measures classification performance.'},
+{q:'What is gradient descent?', options:['Optimization algorithm','Classification algorithm','Clustering algorithm','Regression algorithm'], answer:0, category:'ai_ml', explanation:'Gradient descent minimizes loss functions.'},
+{q:'Which network is for sequences?', options:['RNN','CNN','MLP','GAN'], answer:0, category:'ai_ml', explanation:'RNNs handle sequential data like text/time series.'},
+{q:'What is feature engineering?', options:['Creating better input features','Training models','Testing models','Deploying models'], answer:0, category:'ai_ml', explanation:'Feature engineering creates informative input features.'},
+{q:'Which algorithm is ensemble?', options:['Random Forest','Linear Regression','K-Means','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Random Forest combines multiple decision trees.'},
+{q:'What is transfer learning?', options:['Using pre-trained models','Training from scratch','Manual programming','Rule-based systems'], answer:0, category:'ai_ml', explanation:'Transfer learning uses knowledge from pre-trained models.'},
+{q:'Which technique handles imbalanced data?', options:['SMOTE','PCA','K-Means','Linear Regression'], answer:0, category:'ai_ml', explanation:'SMOTE generates synthetic samples for minority classes.'},
+{q:'What is hyperparameter tuning?', options:['Optimizing model parameters','Training models','Testing models','Deploying models'], answer:0, category:'ai_ml', explanation:'Hyperparameter tuning finds optimal model settings.'},
+{q:'Which framework is by Facebook?', options:['PyTorch','TensorFlow','Keras','scikit-learn'], answer:0, category:'ai_ml', explanation:'PyTorch is developed by Facebook.'},
+{q:'What is precision in ML?', options:['True positives / (True positives + False positives)','True positives / (True positives + False negatives)','Correct predictions / Total predictions','Variance explained'], answer:0, category:'ai_ml', explanation:'Precision measures positive prediction accuracy.'},
+{q:'Which algorithm is for recommendation?', options:['Collaborative Filtering','Linear Regression','K-Means','Decision Trees'], answer:0, category:'ai_ml', explanation:'Collaborative filtering recommends based on user behavior.'},
+{q:'What is recall in ML?', options:['True positives / (True positives + False negatives)','True positives / (True positives + False positives)','Correct predictions / Total predictions','Variance explained'], answer:0, category:'ai_ml', explanation:'Recall measures ability to find all positives.'},
+{q:'Which technique visualizes data?', options:['Matplotlib','TensorFlow','PyTorch','scikit-learn'], answer:0, category:'ai_ml', explanation:'Matplotlib creates data visualizations.'},
+{q:'What is F1 score?', options:['Harmonic mean of precision and recall','Arithmetic mean','Geometric mean','Weighted mean'], answer:0, category:'ai_ml', explanation:'F1 score balances precision and recall.'},
+{q:'Which network is for images?', options:['CNN','RNN','MLP','GAN'], answer:0, category:'ai_ml', explanation:'CNNs are effective for image processing.'},
+{q:'What is bias in ML?', options:['Error from erroneous assumptions','Error from randomness','Model complexity','Data quantity'], answer:0, category:'ai_ml', explanation:'Bias comes from incorrect model assumptions.'},
+{q:'Which algorithm is for anomaly detection?', options:['Isolation Forest','Linear Regression','Logistic Regression','K-Means'], answer:0, category:'ai_ml', explanation:'Isolation Forest detects outliers/anomalies.'},
+{q:'What is variance in ML?', options:['Error from sensitivity to fluctuations','Error from assumptions','Model simplicity','Data quality'], answer:0, category:'ai_ml', explanation:'Variance measures model sensitivity to data changes.'},
+{q:'Which technique handles missing data?', options:['Imputation','Deletion','Ignoring','All of the above'], answer:3, category:'ai_ml', explanation:'Multiple methods handle missing data.'},
+{q:'What is ensemble learning?', options:['Combining multiple models','Using single model','Manual coding','Rule-based systems'], answer:0, category:'ai_ml', explanation:'Ensemble learning combines multiple models.'},
+{q:'Which metric evaluates regression?', options:['MSE','Accuracy','Precision','Recall'], answer:0, category:'ai_ml', explanation:'MSE (Mean Squared Error) evaluates regression.'},
+{q:'What is active learning?', options:['Model selects data to learn from','Model learns passively','Model learns from rules','Model learns from code'], answer:0, category:'ai_ml', explanation:'Active learning selects informative data points.'},
+{q:'Which algorithm is for time series?', options:['ARIMA','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'ARIMA models time series data.'},
+{q:'What is model deployment?', options:['Putting model into production','Training model','Testing model','Designing model'], answer:0, category:'ai_ml', explanation:'Deployment makes model available for use.'},
+{q:'Which technique explains models?', options:['SHAP','PCA','K-Means','Linear Regression'], answer:0, category:'ai_ml', explanation:'SHAP explains model predictions.'},
+{q:'What is data preprocessing?', options:['Cleaning and preparing data','Training models','Testing models','Deploying models'], answer:0, category:'ai_ml', explanation:'Preprocessing cleans and prepares data for ML.'},
+{q:'Which algorithm is for ranking?', options:['Learning to Rank','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Learning to Rank orders items by relevance.'},
+{q:'What is MLOps?', options:['ML operations and deployment','ML training','ML testing','ML research'], answer:0, category:'ai_ml', explanation:'MLOps manages ML lifecycle and deployment.'},
+{q:'Which technique augments data?', options:['Data augmentation','Data reduction','Data deletion','Data ignoring'], answer:0, category:'ai_ml', explanation:'Data augmentation creates variations of existing data.'},
+{q:'What is batch learning?', options:['Learning on entire dataset','Learning incrementally','Learning online','Learning actively'], answer:0, category:'ai_ml', explanation:'Batch learning uses entire dataset at once.'},
+{q:'Which algorithm is for reinforcement learning?', options:['Q-Learning','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Q-Learning is reinforcement learning algorithm.'},
+{q:'What is model interpretability?', options:['Understanding model decisions','Model accuracy','Model speed','Model size'], answer:0, category:'ai_ml', explanation:'Interpretability understands how models make decisions.'},
+{q:'Which technique selects features?', options:['Feature selection','Feature engineering','Feature creation','Feature deletion'], answer:0, category:'ai_ml', explanation:'Feature selection chooses relevant features.'},
+{q:'What is online learning?', options:['Learning incrementally from data streams','Learning from entire dataset','Learning from rules','Learning from code'], answer:0, category:'ai_ml', explanation:'Online learning updates model as data arrives.'},
+{q:'Which algorithm is for generative models?', options:['GAN','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'GANs generate new data samples.'},
+{q:'What is cross-validation?', options:['Assessing model performance','Training models','Testing models','Deploying models'], answer:0, category:'ai_ml', explanation:'Cross-validation evaluates model generalization.'},
+{q:'Which technique handles categorical data?', options:['One-hot encoding','PCA','K-Means','Linear Regression'], answer:0, category:'ai_ml', explanation:'One-hot encoding converts categories to numerical.'},
+{q:'What is model persistence?', options:['Saving trained models','Training models','Testing models','Deploying models'], answer:0, category:'ai_ml', explanation:'Persistence saves models for later use.'},
+{q:'Which algorithm is for optimization?', options:['Genetic algorithms','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Genetic algorithms solve optimization problems.'},
+{q:'What is automated ML?', options:['Automating ML pipeline','Manual ML','Rule-based ML','Code-based ML'], answer:0, category:'ai_ml', explanation:'AutoML automates machine learning processes.'},
+{q:'Which technique detects outliers?', options:['Isolation Forest','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Isolation Forest identifies outlier data points.'},
+{q:'What is model monitoring?', options:['Tracking model performance in production','Training models','Testing models','Designing models'], answer:0, category:'ai_ml', explanation:'Monitoring tracks model performance over time.'},
+{q:'Which algorithm is for natural language?', options:['Transformer','K-Means','Linear Regression','Logistic Regression'], answer:0, category:'ai_ml', explanation:'Transformers revolutionized NLP tasks.'},
+{q:'What is federated learning?', options:['Training on decentralized data','Training on centralized data','Training on synthetic data','Training on public data'], answer:0, category:'ai_ml', explanation:'Federated learning trains across decentralized devices.'},
+{q:'Which technique handles text data?', options:['TF-IDF','PCA','K-Means','Linear Regression'], answer:0, category:'ai_ml', explanation:'TF-IDF represents text as numerical features.'},
+{q:'What is model serving?', options:['Making predictions with deployed model','Training model','Testing model','Designing model'], answer:0, category:'ai_ml', explanation:'Model serving provides predictions from deployed models.'},
+{q:'Which algorithm is for clustering?', options:['DBSCAN','Linear Regression','Logistic Regression','Decision Trees'], answer:0, category:'ai_ml', explanation:'DBSCAN finds density-based clusters.'},
+{q:'What is explainable AI?', options:['AI with understandable decisions','Black-box AI','Rule-based AI','Manual AI'], answer:0, category:'ai_ml', explanation:'Explainable AI provides transparent decision-making.'},
+// =====================
+// NETWORKING QUESTIONS
+// =====================
+{q:'What does IP stand for?', options:['Internet Program','Internal Protocol','Internet Protocol','Integrated Packet'], answer:2, category:'networking', explanation:'IP stands for Internet Protocol.'},
+{q:'Which device routes traffic between networks?', options:['Switch','Router','Hub','Bridge'], answer:1, category:'networking', explanation:'Routers direct traffic between networks.'},
+{q:'Which layer is the Transport layer?', options:['Layer 1','Layer 2','Layer 4','Layer 7'], answer:2, category:'networking', explanation:'Layer 4 = Transport (TCP/UDP).'},  
+{q:'What does DNS do?', options:['Encrypts data','Translates domain names','Stores passwords','Controls bandwidth'], answer:1, category:'networking', explanation:'DNS converts domain names to IP addresses.'},
+{q:'Which protocol sends emails?', options:['HTTP','SMTP','FTP','SSH'], answer:1, category:'networking', explanation:'SMTP sends outgoing emails.'},
+{q:'What does TCP stand for?', options:['Transmission Control Protocol','Transfer Control Protocol','Transmission Communication Protocol','Transfer Communication Protocol'], answer:0, category:'networking', explanation:'TCP = Transmission Control Protocol.'},
+{q:'Which layer routes packets?', options:['Network Layer','Transport Layer','Application Layer','Physical Layer'], answer:0, category:'networking', explanation:'Network layer handles packet routing.'},
+{q:'What is IP address?', options:['Unique device identifier','Device name','Device type','Device location'], answer:0, category:'networking', explanation:'IP address uniquely identifies devices on network.'},
+{q:'Which protocol is for email?', options:['SMTP','HTTP','FTP','TCP'], answer:0, category:'networking', explanation:'SMTP handles email transmission.'},
+{q:'What is DNS?', options:['Domain Name System','Domain Network System','Digital Name System','Digital Network System'], answer:0, category:'networking', explanation:'DNS translates domain names to IP addresses.'},
+{q:'Which port is for HTTP?', options:['80','443','21','25'], answer:0, category:'networking', explanation:'Port 80 is default for HTTP.'},
+{q:'What is subnet mask?', options:['Defines network portion of IP','Defines device name','Defines protocol','Defines port'], answer:0, category:'networking', explanation:'Subnet mask separates network and host portions.'},
+{q:'Which protocol is connectionless?', options:['UDP','TCP','HTTP','FTP'], answer:0, category:'networking', explanation:'UDP is connectionless protocol.'},
+{q:'What is router?', options:['Forwards packets between networks','Connects devices in same network','Manages emails','Manages files'], answer:0, category:'networking', explanation:'Router forwards packets between different networks.'},
+{q:'Which layer handles encryption?', options:['Presentation Layer','Network Layer','Transport Layer','Physical Layer'], answer:0, category:'networking', explanation:'Presentation layer handles encryption/decryption.'},
+{q:'What is firewall?', options:['Network security system','Network speed booster','Network storage','Network monitor'], answer:0, category:'networking', explanation:'Firewall controls network traffic based on rules.'},
+{q:'Which protocol is for file transfer?', options:['FTP','HTTP','SMTP','TCP'], answer:0, category:'networking', explanation:'FTP transfers files between systems.'},
+{q:'What is MAC address?', options:['Hardware address','IP address','Domain address','Port address'], answer:0, category:'networking', explanation:'MAC address uniquely identifies network interfaces.'},
+{q:'Which port is for HTTPS?', options:['443','80','21','25'], answer:0, category:'networking', explanation:'Port 443 is default for HTTPS.'},
+{q:'What is VPN?', options:['Virtual Private Network','Virtual Public Network','Visual Private Network','Visual Public Network'], answer:0, category:'networking', explanation:'VPN creates secure connection over public network.'},
+{q:'Which protocol resolves IP to MAC?', options:['ARP','DNS','HTTP','FTP'], answer:0, category:'networking', explanation:'ARP resolves IP addresses to MAC addresses.'},
+{q:'What is bandwidth?', options:['Network capacity','Network security','Network type','Network protocol'], answer:0, category:'networking', explanation:'Bandwidth measures network data transfer capacity.'},
+{q:'Which layer handles reliable delivery?', options:['Transport Layer','Network Layer','Data Link Layer','Physical Layer'], answer:0, category:'networking', explanation:'Transport layer ensures reliable data delivery.'},
+{q:'What is switch?', options:['Connects devices in same network','Connects different networks','Manages emails','Manages files'], answer:0, category:'networking', explanation:'Switch connects devices within same network.'},
+{q:'Which protocol is for web browsing?', options:['HTTP','FTP','SMTP','TCP'], answer:0, category:'networking', explanation:'HTTP is protocol for web browsing.'},
+{q:'What is latency?', options:['Network delay','Network speed','Network security','Network capacity'], answer:0, category:'networking', explanation:'Latency measures network delay time.'},
+{q:'Which layer handles physical transmission?', options:['Physical Layer','Network Layer','Transport Layer','Application Layer'], answer:0, category:'networking', explanation:'Physical layer handles actual signal transmission.'},
+{q:'What is NAT?', options:['Network Address Translation','Network Access Translation','Network Address Transfer','Network Access Transfer'], answer:0, category:'networking', explanation:'NAT translates private IPs to public IPs.'},
+{q:'Which protocol is for network management?', options:['SNMP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'SNMP manages network devices.'},
+{q:'What is packet?', options:['Data unit in networking','Network device','Network protocol','Network address'], answer:0, category:'networking', explanation:'Packet is basic data transfer unit.'},
+{q:'Which layer provides end-to-end communication?', options:['Transport Layer','Network Layer','Data Link Layer','Physical Layer'], answer:0, category:'networking', explanation:'Transport layer provides host-to-host communication.'},
+{q:'What is DHCP?', options:['Dynamic Host Configuration Protocol','Dynamic Host Communication Protocol','Digital Host Configuration Protocol','Digital Host Communication Protocol'], answer:0, category:'networking', explanation:'DHCP automatically assigns IP addresses.'},
+{q:'Which protocol is for secure shell?', options:['SSH','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'SSH provides secure remote access.'},
+{q:'What is routing table?', options:['Network path information','Network device list','Network protocol list','Network address list'], answer:0, category:'networking', explanation:'Routing table contains network path information.'},
+{q:'Which layer handles error detection?', options:['Data Link Layer','Network Layer','Transport Layer','Physical Layer'], answer:0, category:'networking', explanation:'Data link layer detects transmission errors.'},
+{q:'What is ICMP?', options:['Internet Control Message Protocol','Internet Communication Message Protocol','Internet Control Management Protocol','Internet Communication Management Protocol'], answer:0, category:'networking', explanation:'ICMP handles error messages and diagnostics.'},
+{q:'Which protocol is for time synchronization?', options:['NTP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'NTP synchronizes computer clocks.'},
+{q:'What is hub?', options:['Basic network connector','Network router','Network switch','Network firewall'], answer:0, category:'networking', explanation:'Hub connects multiple network devices.'},
+{q:'Which layer handles logical addressing?', options:['Network Layer','Transport Layer','Data Link Layer','Physical Layer'], answer:0, category:'networking', explanation:'Network layer handles IP addressing.'},
+{q:'What is QoS?', options:['Quality of Service','Quantity of Service','Quality of Security','Quantity of Security'], answer:0, category:'networking', explanation:'QoS manages network traffic prioritization.'},
+{q:'Which protocol is for voice over IP?', options:['SIP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'SIP handles VoIP communications.'},
+{q:'What is subnetting?', options:['Dividing network into subnets','Combining networks','Securing networks','Monitoring networks'], answer:0, category:'networking', explanation:'Subnetting divides large networks into smaller ones.'},
+{q:'Which layer handles session management?', options:['Session Layer','Network Layer','Transport Layer','Application Layer'], answer:0, category:'networking', explanation:'Session layer manages communication sessions.'},
+{q:'What is proxy server?', options:['Intermediary for client requests','Network router','Network switch','Network firewall'], answer:0, category:'networking', explanation:'Proxy server acts as intermediary for requests.'},
+{q:'Which protocol is for secure web?', options:['HTTPS','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'HTTPS provides secure web communication.'},
+{q:'What is network topology?', options:['Network layout structure','Network speed','Network security','Network protocol'], answer:0, category:'networking', explanation:'Topology defines network device arrangement.'},
+{q:'Which layer handles data formatting?', options:['Presentation Layer','Network Layer','Transport Layer','Application Layer'], answer:0, category:'networking', explanation:'Presentation layer formats data for applications.'},
+{q:'What is port forwarding?', options:['Redirecting network traffic','Blocking network traffic','Monitoring network traffic','Accelerating network traffic'], answer:0, category:'networking', explanation:'Port forwarding redirects traffic to specific ports.'},
+{q:'Which protocol is for domain names?', options:['DNS','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'DNS resolves domain names to IP addresses.'},
+{q:'What is network protocol?', options:['Communication rules','Network device','Network address','Network cable'], answer:0, category:'networking', explanation:'Protocol defines communication rules.'},
+{q:'Which layer provides network services?', options:['Application Layer','Network Layer','Transport Layer','Data Link Layer'], answer:0, category:'networking', explanation:'Application layer provides user services.'},
+{q:'What is wireless access point?', options:['Wireless network connection','Wired network connection','Network security','Network monitoring'], answer:0, category:'networking', explanation:'Access point provides wireless network access.'},
+{q:'Which protocol is for file sharing?', options:['SMB','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'SMB shares files over network.'},
+{q:'What is network segmentation?', options:['Dividing network into segments','Combining networks','Securing networks','Monitoring networks'], answer:0, category:'networking', explanation:'Segmentation divides network for security/performance.'},
+{q:'Which layer handles media access?', options:['Data Link Layer','Network Layer','Transport Layer','Physical Layer'], answer:0, category:'networking', explanation:'Data link layer controls media access.'},
+{q:'What is load balancer?', options:['Distributes network traffic','Blocks network traffic','Monitors network traffic','Accelerates network traffic'], answer:0, category:'networking', explanation:'Load balancer distributes traffic across servers.'},
+{q:'Which protocol is for remote desktop?', options:['RDP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'RDP provides remote desktop access.'},
+{q:'What is network monitoring?', options:['Observing network performance','Blocking network traffic','Accelerating network traffic','Securing network traffic'], answer:0, category:'networking', explanation:'Monitoring observes network health and performance.'},
+{q:'Which layer handles flow control?', options:['Transport Layer','Network Layer','Data Link Layer','Physical Layer'], answer:0, category:'networking', explanation:'Transport layer manages data flow control.'},
+{q:'What is network bridge?', options:['Connects network segments','Separates networks','Secures networks','Monitors networks'], answer:0, category:'networking', explanation:'Bridge connects network segments at data link layer.'},
+{q:'Which protocol is for network time?', options:['NTP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'NTP synchronizes network time.'},
+{q:'What is network security?', options:['Protecting network resources','Accelerating network','Monitoring network','Connecting networks'], answer:0, category:'networking', explanation:'Network security protects against threats.'},
+{q:'Which layer handles congestion control?', options:['Transport Layer','Network Layer','Data Link Layer','Physical Layer'], answer:0, category:'networking', explanation:'Transport layer manages network congestion.'},
+{q:'What is network interface card?', options:['Hardware for network connection','Network software','Network protocol','Network address'], answer:0, category:'networking', explanation:'NIC connects computer to network.'},
+{q:'Which protocol is for email retrieval?', options:['POP3','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'POP3 retrieves email from server.'},
+{q:'What is network architecture?', options:['Network design and structure','Network speed','Network security','Network protocol'], answer:0, category:'networking', explanation:'Architecture defines network design and components.'},
+{q:'Which layer handles data compression?', options:['Presentation Layer','Network Layer','Transport Layer','Application Layer'], answer:0, category:'networking', explanation:'Presentation layer compresses/decompresses data.'},
+{q:'What is network cable?', options:['Physical network connection','Wireless connection','Network protocol','Network address'], answer:0, category:'networking', explanation:'Network cables provide physical connections.'},
+{q:'Which protocol is for instant messaging?', options:['XMPP','HTTP','FTP','SMTP'], answer:0, category:'networking', explanation:'XMPP handles instant messaging.'},
+{q:'What is network performance?', options:['Network speed and reliability','Network security','Network design','Network protocol'], answer:0, category:'networking', explanation:'Performance measures network speed and reliability.'},
+
+
+// =========================
+// CYBER SECURITY QUESTIONS
+// =========================
+{q:'Which attack floods a system with traffic?', options:['Phishing','DoS','Injection','Brute force'], answer:1, category:'cybersecurity', explanation:'DoS overloads servers with traffic.'},
+{q:'What does VPN provide?', options:['Speed','Encryption','Malware','Physical protection'], answer:1, category:'cybersecurity', explanation:'VPN encrypts online traffic.'},
+{q:'Which is a strong password example?', options:['12345','admin','Pass@2025','password'], answer:2, category:'cybersecurity', explanation:'Pass@2025 contains symbols & numbers.'},   {q:'What is phishing?', options:['Email scam','Network setup','Password hashing','Firewall setup'], answer:0, category:'sec', explanation:'Phishing tricks users to reveal data.'},
+{q:'Firewall is used to?', options:['Store data','Block unauthorized traffic','Send emails','Build apps'], answer:1, category:'cybersecurity', explanation:'Firewalls monitor and filter traffic.'},
+{q:'What is encryption?', options:['Converting data to secure format','Converting data to readable format','Deleting data','Copying data'], answer:0, category:'cybersecurity', explanation:'Encryption converts data to prevent unauthorized access.'},
+{q:'Which attack intercepts communication?', options:['Man-in-the-middle','DDoS','Phishing','Malware'], answer:0, category:'cybersecurity', explanation:'MITM attacks intercept communications.'},
+{q:'What is firewall?', options:['Network security system','Network speed booster','Network storage','Network monitor'], answer:0, category:'cybersecurity', explanation:'Firewall controls network traffic based on security rules.'},
+{q:'Which malware replicates itself?', options:['Virus','Trojan','Spyware','Adware'], answer:0, category:'cybersecurity', explanation:'Virus self-replicates and spreads.'},
+{q:'What is two-factor authentication?', options:['Two verification methods','One verification method','No verification','Biometric verification only'], answer:0, category:'cybersecurity', explanation:'2FA uses two different verification methods.'},
+{q:'Which attack floods servers?', options:['DDoS','Phishing','MITM','SQL injection'], answer:0, category:'cybersecurity', explanation:'DDoS attacks overwhelm servers with traffic.'},
+{q:'What is VPN?', options:['Virtual Private Network','Virtual Public Network','Visual Private Network','Visual Public Network'], answer:0, category:'cybersecurity', explanation:'VPN creates secure encrypted connection.'},
+{q:'Which method steals passwords?', options:['Phishing','DDoS','MITM','All of the above'], answer:3, category:'cybersecurity', explanation:'Multiple methods can steal passwords.'},
+{q:'What is penetration testing?', options:['Authorized hacking attempt','Unauthorized hacking','Network monitoring','Virus scanning'], answer:0, category:'cybersecurity', explanation:'Pen testing finds vulnerabilities through authorized attacks.'},
+{q:'Which attack targets databases?', options:['SQL injection','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'SQL injection attacks manipulate databases.'},
+{q:'What is antivirus software?', options:['Detects and removes malware','Speeds up computer','Backs up data','Manages files'], answer:0, category:'cybersecurity', explanation:'Antivirus detects and removes malicious software.'},
+{q:'Which method encrypts data?', options:['AES','HTTP','FTP','SMTP'], answer:0, category:'cybersecurity', explanation:'AES is encryption algorithm.'},
+{q:'What is social engineering?', options:['Manipulating people for information','Technical hacking','Network attacks','Software attacks'], answer:0, category:'cybersecurity', explanation:'Social engineering manipulates people into revealing information.'},
+{q:'Which attack uses malicious emails?', options:['Phishing','DDoS','MITM','SQL injection'], answer:0, category:'cybersecurity', explanation:'Phishing uses deceptive emails to steal information.'},
+{q:'What is vulnerability assessment?', options:['Finding security weaknesses','Fixing security issues','Preventing attacks','Monitoring networks'], answer:0, category:'cybersecurity', explanation:'Vulnerability assessment identifies security weaknesses.'},
+{q:'Which malware hides in legitimate software?', options:['Trojan','Virus','Worm','Spyware'], answer:0, category:'cybersecurity', explanation:'Trojan hides in legitimate-looking software.'},
+{q:'What is intrusion detection system?', options:['Monitors for suspicious activity','Blocks all traffic','Speeds up network','Backs up data'], answer:0, category:'cybersecurity', explanation:'IDS monitors network for malicious activity.'},
+{q:'Which method secures websites?', options:['HTTPS','HTTP','FTP','SMTP'], answer:0, category:'cybersecurity', explanation:'HTTPS provides secure web communication.'},
+{q:'What is ransomware?', options:['Blocks access until payment','Steals data','Monitors activity','Deletes data'], answer:0, category:'cybersecurity', explanation:'Ransomware encrypts files and demands payment.'},
+{q:'Which attack uses malicious scripts?', options:['XSS','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'XSS attacks inject malicious scripts into websites.'},
+{q:'What is security policy?', options:['Rules for protecting information','Network design','Software development','Hardware configuration'], answer:0, category:'cybersecurity', explanation:'Security policy defines protection rules and procedures.'},
+{q:'Which method authenticates users?', options:['Biometrics','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Biometrics uses physical characteristics for authentication.'},
+{q:'What is zero-day vulnerability?', options:['Unknown vulnerability with no patch','Known vulnerability','Patched vulnerability','Minor vulnerability'], answer:0, category:'cybersecurity', explanation:'Zero-day vulnerabilities are unknown and unpatched.'},
+{q:'Which attack compromises passwords?', options:['Brute force','DDoS','MITM','SQL injection'], answer:0, category:'cybersecurity', explanation:'Brute force attacks try all password combinations.'},
+{q:'What is security audit?', options:['Systematic security evaluation','Random security check','Network monitoring','Virus scanning'], answer:0, category:'cybersecurity', explanation:'Security audit systematically evaluates security controls.'},
+{q:'Which malware records user activity?', options:['Spyware','Virus','Trojan','Worm'], answer:0, category:'cybersecurity', explanation:'Spyware secretly monitors user activity.'},
+{q:'What is access control?', options:['Managing user permissions','Encrypting data','Scanning for viruses','Monitoring networks'], answer:0, category:'cybersecurity', explanation:'Access control manages user access to resources.'},
+{q:'Which method protects against XSS?', options:['Input validation','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Input validation prevents XSS attacks.'},
+{q:'What is security incident?', options:['Security breach event','Security policy','Security tool','Security training'], answer:0, category:'cybersecurity', explanation:'Security incident is a breach or attack event.'},
+{q:'Which attack uses fake websites?', options:['Phishing','DDoS','MITM','SQL injection'], answer:0, category:'cybersecurity', explanation:'Phishing uses fake websites to steal information.'},
+{q:'What is disaster recovery?', options:['Restoring operations after incident','Preventing incidents','Monitoring incidents','Reporting incidents'], answer:0, category:'cybersecurity', explanation:'Disaster recovery restores systems after incidents.'},
+{q:'Which malware spreads through networks?', options:['Worm','Virus','Trojan','Spyware'], answer:0, category:'cybersecurity', explanation:'Worm self-replicates across networks.'},
+{q:'What is security awareness training?', options:['Educating users about security','Technical security measures','Network security','Software security'], answer:0, category:'cybersecurity', explanation:'Security training educates users about risks and best practices.'},
+{q:'Which method detects intrusions?', options:['IDS','Firewall','Antivirus','Encryption'], answer:0, category:'cybersecurity', explanation:'Intrusion Detection System monitors for attacks.'},
+{q:'What is data breach?', options:['Unauthorized data access','Authorized data access','Data backup','Data encryption'], answer:0, category:'cybersecurity', explanation:'Data breach involves unauthorized data access.'},
+{q:'Which attack manipulates URLs?', options:['URL manipulation','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'URL manipulation attacks alter web addresses.'},
+{q:'What is security control?', options:['Safeguard against threats','Threat itself','Vulnerability','Attack method'], answer:0, category:'cybersecurity', explanation:'Security control protects against threats.'},
+{q:'Which method prevents SQL injection?', options:['Parameterized queries','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Parameterized queries prevent SQL injection.'},
+{q:'What is risk assessment?', options:['Evaluating security risks','Fixing security issues','Preventing all risks','Ignoring risks'], answer:0, category:'cybersecurity', explanation:'Risk assessment evaluates potential security risks.'},
+{q:'Which malware displays ads?', options:['Adware','Virus','Trojan','Worm'], answer:0, category:'cybersecurity', explanation:'Adware displays unwanted advertisements.'},
+{q:'What is security monitoring?', options:['Continuous security observation','One-time security check','Security policy creation','Security training'], answer:0, category:'cybersecurity', explanation:'Security monitoring continuously watches for threats.'},
+{q:'Which method verifies data integrity?', options:['Hashing','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Hashing verifies data hasn\'t been altered.'},
+{q:'What is security compliance?', options:['Following security regulations','Creating security policies','Implementing security tools','Training security staff'], answer:0, category:'cybersecurity', explanation:'Compliance means following security laws and standards.'},
+{q:'Which attack uses session hijacking?', options:['Session attack','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'Session attacks hijack user sessions.'},
+{q:'What is security framework?', options:['Structured security approach','Security tool','Security policy','Security incident'], answer:0, category:'cybersecurity', explanation:'Security framework provides structured security approach.'},
+{q:'Which method protects data at rest?', options:['Encryption','Firewall','IDS','Antivirus'], answer:0, category:'cybersecurity', explanation:'Encryption protects stored data.'},
+{q:'What is threat intelligence?', options:['Information about threats','Information about vulnerabilities','Information about attacks','All of the above'], answer:3, category:'cybersecurity', explanation:'Threat intelligence covers threats, vulnerabilities, and attacks.'},
+{q:'Which attack uses buffer overflow?', options:['Buffer overflow attack','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'Buffer overflow attacks exploit memory vulnerabilities.'},
+{q:'What is security certification?', options:['Formal security recognition','Security training','Security policy','Security tool'], answer:0, category:'cybersecurity', explanation:'Certification formally recognizes security expertise.'},
+{q:'Which method manages passwords?', options:['Password manager','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Password manager stores and manages passwords securely.'},
+{q:'What is security governance?', options:['Overall security management','Technical security','Network security','Software security'], answer:0, category:'cybersecurity', explanation:'Governance manages overall security program.'},
+{q:'Which attack uses cross-site request forgery?', options:['CSRF','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'CSRF attacks trick users into executing actions.'},
+{q:'What is security architecture?', options:['Structured security design','Security policy','Security tool','Security incident'], answer:0, category:'cybersecurity', explanation:'Security architecture designs secure systems.'},
+{q:'Which method provides non-repudiation?', options:['Digital signatures','Encryption','Firewall','Antivirus'], answer:0, category:'cybersecurity', explanation:'Digital signatures prevent denial of actions.'},
+{q:'What is security operations?', options:['Day-to-day security management','Security policy creation','Security architecture','Security governance'], answer:0, category:'cybersecurity', explanation:'Security operations manages daily security activities.'},
+{q:'Which attack uses privilege escalation?', options:['Privilege attack','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'Privilege escalation gains higher access levels.'},
+{q:'What is security testing?', options:['Evaluating security measures','Implementing security','Designing security','Managing security'], answer:0, category:'cybersecurity', explanation:'Security testing evaluates protection effectiveness.'},
+{q:'Which method secures wireless networks?', options:['WPA2','HTTP','FTP','SMTP'], answer:0, category:'cybersecurity', explanation:'WPA2 secures wireless networks.'},
+{q:'What is security culture?', options:['Organization\'s security mindset','Security tools','Security policies','Security incidents'], answer:0, category:'cybersecurity', explanation:'Security culture reflects organizational security attitude.'},
+{q:'Which attack uses backdoors?', options:['Backdoor attack','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'Backdoor attacks use hidden access methods.'},
+{q:'What is security metrics?', options:['Security performance measurements','Security tools','Security policies','Security incidents'], answer:0, category:'cybersecurity', explanation:'Metrics measure security program effectiveness.'},
+{q:'Which method implements least privilege?', options:['Minimum necessary access','Maximum access','No access','Random access'], answer:0, category:'cybersecurity', explanation:'Least privilege gives minimum necessary access.'},
+{q:'What is security maturity?', options:['Security program sophistication','Security tools','Security policies','Security incidents'], answer:0, category:'cybersecurity', explanation:'Maturity measures security program development.'},
+{q:'Which attack uses rootkits?', options:['Rootkit attack','DDoS','Phishing','MITM'], answer:0, category:'cybersecurity', explanation:'Rootkit attacks hide malicious software.'},
+{q:'What is security budget?', options:['Security funding allocation','Security tools','Security policies','Security incidents'], answer:0, category:'cybersecurity', explanation:'Security budget allocates funds for security.'},
+{q:'Which method implements defense in depth?', options:['Multiple security layers','Single security layer','No security layers','Random security layers'], answer:0, category:'cybersecurity', explanation:'Defense in depth uses multiple security layers.'},
+];
+  /* ==================== STATE ==================== */
+  let state = {
+    userName:'Guest',
+    initials:'G',
+    category:'general',
+    difficulty:'medium',
+    numQuestions:10,
+    timeLimitMinutes:5,
+    shuffleQ:true,
+    pool:[],
+    order:[],
+    index:0,
+    answers:[], // user answers: {selected, correctIndex, locked, timeAtAnswer}
+    timer:null,
+    secondsLeft:0,
+    startedAt:0,
+    endedAt:0
+  };
+
+  /* ==================== UTILITIES ==================== */
+  function $(id){return document.getElementById(id)}
+
+  function formatTime(s){const mm=Math.floor(s/60);const ss=s%60;return `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`}
+
+  function saveBestScore(name,score,percent,timeTaken){
+    const key='noabyte_best_scores';
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    arr.push({name,score,percent,timeTaken,date:new Date().toISOString()});
+    arr.sort((a,b)=>b.percent-a.percent||a.timeTaken-b.timeTaken);
+    localStorage.setItem(key,JSON.stringify(arr.slice(0,50)));
+  }
+
+  function getBest(){
+    const arr=JSON.parse(localStorage.getItem('noabyte_best_scores')||'[]');
+    return arr[0]||null;
+  }
+
+  /* ==================== START / SETUP ==================== */
+  $('startBtn').addEventListener('click',()=>{
+    // read settings
+    state.userName = $('username').value.trim()||'Guest';
+    state.initials = state.userName.split(' ').map(s=>s[0]||'').slice(0,2).join('').toUpperCase()||'G';
+    state.category = $('category').value;
+    state.difficulty = $('difficulty').value;
+    state.numQuestions = Math.max(1,Math.min(50,parseInt($('numQuestions').value||10)));
+    state.timeLimitMinutes = Math.max(1,Math.min(120,parseInt($('timeLimit').value||5)));
+    state.shuffleQ = $('shuffleQ').value==='true';
+
+    // prepare pool
+    const pool = QUESTIONS.filter(q=> (state.category==='general' || q.category===state.category) && (q.difficulty===state.difficulty || state.difficulty==='medium' || q.difficulty));
+    if(pool.length===0){alert('No questions for this selection try General category or a different difficulty.');return}
+    // choose numQuestions from pool
+    let chosen = pool.slice();
+    if(state.shuffleQ) shuffle(chosen);
+    chosen = chosen.slice(0,state.numQuestions);
+    state.pool = chosen;
+    state.order = Array.from({length:chosen.length},(_,i)=>i);
+    if(state.shuffleQ) shuffle(state.order);
+
+    // init answers
+    state.answers = state.pool.map(()=>({selected:null,locked:false,correctIndex:null,timeAtAnswer:null}));
+    state.index = 0;
+
+    // hide setup and show quiz
+    $('setupSection').style.display='none';
+    $('quizSection').style.display='block';
+    $('totalQuestions').textContent = state.pool.length;
+    $('totalQuestions2').textContent = state.pool.length;
+    $('displayName').textContent = state.userName;
+    $('userAvatar').textContent = state.initials;
+    $('displayCategory').textContent = 'Category: '+state.category.charAt(0).toUpperCase()+state.category.slice(1);
+
+    // timer
+    state.secondsLeft = state.timeLimitMinutes*60;
+    state.startedAt = Date.now();
+    startTimer();
+    renderQuestion();
+    updateProgressUI();
+    playIntro();
+  });
+
+  /* ==================== TIMER ==================== */
+  function startTimer(){
+    clearInterval(state.timer);
+    state.timer = setInterval(()=>{
+      state.secondsLeft--;
+      $('timerDisplay').textContent = formatTime(state.secondsLeft);
+      if(state.secondsLeft<=60){
+        // beep every second in the last 60s
+        beep(1000,80);
+      }
+      if(state.secondsLeft<=0){
+        clearInterval(state.timer);
+        finishQuiz();
+      }
+    },1000);
+    $('timerDisplay').textContent = formatTime(state.secondsLeft);
+  }
+
+  /* ==================== RENDERING ==================== */
+  function renderQuestion(){
+    const idx = state.index;
+    $('currentIndex').textContent = idx+1;
+    $('questionText').textContent = state.pool[idx].q;
+    $('answeredCount').textContent = state.answers.filter(a=>a.locked).length;
+    const optsWrap = $('optionsWrap'); optsWrap.innerHTML='';
+    // prepare shuffled options order per question (store in question object to persist)
+    if(!state.pool[idx].optOrder){
+      state.pool[idx].optOrder = [...Array(state.pool[idx].options.length).keys()]; shuffle(state.pool[idx].optOrder);
+    }
+    const order = state.pool[idx].optOrder;
+    order.forEach((optIndex,i)=>{
+      const div = document.createElement('div'); div.className='opt'; if(state.answers[idx].locked) div.classList.add('disabled');
+      div.dataset.opt = optIndex;
+      div.innerHTML = `<div class="pill">${String.fromCharCode(65+i)}</div><div style="flex:1">${state.pool[idx].options[optIndex]}</div>`;
+      div.addEventListener('click',()=>handleAnswer(idx,optIndex,div));
+      optsWrap.appendChild(div);
+    });
+    // if question already answered, show results
+    if(state.answers[idx].locked){
+      markOptionsForIndex(idx);
+    }
+    updateProgressUI();
+  }
+
+  function markOptionsForIndex(qIdx){
+    const card = $('optionsWrap');
+    const nodes = Array.from(card.children);
+    const correctIndex = state.pool[qIdx].answer; // absolute index in options
+    const chosen = state.answers[qIdx].selected;
+    nodes.forEach((node,i)=>{
+      const optAbs = parseInt(node.dataset.opt);
+      if(optAbs===correctIndex){ node.classList.add('correct'); }
+      if(chosen!==null && optAbs===chosen && chosen!==correctIndex){ node.classList.add('wrong'); }
+      node.classList.add('disabled');
+    });
+  }
+
+  /* ==================== HANDLE ANSWERS ==================== */
+  function handleAnswer(qIdx,optAbs,node){
+    if(state.answers[qIdx].locked) return; // lock once answered
+    // lock answer
+    const correctIndex = state.pool[qIdx].answer;
+    state.answers[qIdx].selected = optAbs;
+    state.answers[qIdx].timeAtAnswer = Date.now();
+    state.answers[qIdx].locked = true;
+    // visual feedback
+    if(optAbs===correctIndex){ node.classList.add('correct'); playVictoryIfLast(); }
+    else{ node.classList.add('wrong'); revealCorrectInUI(qIdx); playFailTone(); }
+    // move to next after short delay
+    setTimeout(()=>{
+      // prevent re-answering
+      markOptionsForIndex(qIdx);
+      if(qIdx < state.pool.length-1){ state.index = qIdx+1; renderQuestion(); }
+      else{ // reached end
+        finishQuiz();
+      }
+    },900);
+  }
+
+  function revealCorrectInUI(qIdx){
+    const opts = $('optionsWrap').children;
+    Array.from(opts).forEach(n=>{const optAbs=parseInt(n.dataset.opt); if(optAbs===state.pool[qIdx].answer) n.classList.add('correct'); n.classList.add('disabled');});
+  }
+
+  /* ==================== NAVIGATION ==================== */
+  $('prevBtn').addEventListener('click',()=>{ if(state.index>0){ state.index--; renderQuestion(); } });
+  $('nextBtn').addEventListener('click',()=>{ if(state.index<state.pool.length-1){ state.index++; renderQuestion(); } });
+
+  /* ==================== FINISH / RESULTS ==================== */
+  function finishQuiz(){
+    clearInterval(state.timer);
+    state.endedAt = Date.now();
+    $('resultView').style.display='block';
+    // compute results
+    const total = state.pool.length;
+    let correct=0; const wrongs = [];
+    state.answers.forEach((ans,i)=>{ if(ans.selected===state.pool[i].answer) correct++; else wrongs.push(i); });
+    const percent = Math.round((correct/total)*100);
+    const timeSpent = Math.round((state.endedAt - state.startedAt)/1000);
+    $('resName').textContent = state.userName;
+    $('resScore').textContent = `${correct}/${total}`;
+    $('resCorrect').textContent = correct;
+    $('resWrong').textContent = total-correct;
+    $('resPercent').textContent = percent + '%';
+    $('resTime').textContent = formatTime(timeSpent);
+
+    // messages & best score
+    const best = getBest();
+    if(!best || percent>best.percent){
+      // new best
+      saveBestScore(state.userName,`${correct}/${total}`,percent,timeSpent);
+      $('bestScoreDisplay').textContent = `${state.userName} — ${percent}%`;
+      // celebrate
+      confetti();
+    }
+    if(percent>=80){
+      $('downloadCertBtn').style.display='inline-block';
+      $('downloadCertBtn').addEventListener('click',generateCertificate,false);
+    } else {
+      $('downloadCertBtn').style.display='none';
+    }
+
+    // show solutions
+    const sol = $('solutionsWrap'); sol.innerHTML='';
+    state.pool.forEach((q,idx)=>{
+      const correct = q.options[q.answer];
+      const userSel = state.answers[idx].selected===null? 'Not answered': q.options[state.answers[idx].selected];
+      const div = document.createElement('div'); div.style.padding='10px'; div.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+      div.innerHTML = `<strong>Q${idx+1}:</strong> ${q.q}<br><em>Your answer:</em> ${userSel} <br><em>Correct:</em> ${correct} <br><em>Explanation:</em> ${q.explanation}`;
+      sol.appendChild(div);
+    });
+
+    // save leaderboard entry
+    saveBestScore(state.userName,`${correct}/${total}`,percent,timeSpent);
+
+    // show print/save
+    $('printReceiptBtn').onclick = ()=>{ window.print(); };
+
+    // performance message
+    if(percent>=70){ alert(`Congratulations ${state.userName}! You passed with ${percent}% — you can download your certificate.`); }
+    else{ alert(`Nice try ${state.userName}. You scored ${percent}%. Keep practicing and try again!`); }
+  }
+
+  /* ==================== RETAKE / RESTART ==================== */
+  $('retakeBtn').addEventListener('click',()=>{
+    // shuffle questions and options
+    state.order = Array.from({length:state.pool.length},(_,i)=>i); shuffle(state.order);
+    state.pool = state.pool.map(q=>{ q.optOrder = [...Array(q.options.length).keys()]; shuffle(q.optOrder); return q; });
+    state.answers = state.pool.map(()=>({selected:null,locked:false,correctIndex:null,timeAtAnswer:null}));
+    state.index=0; state.secondsLeft=state.timeLimitMinutes*60; startTimer(); $('resultView').style.display='none'; renderQuestion();
+  });
+  $('restartBtn').addEventListener('click',()=>{
+    // same order
+    state.answers = state.pool.map(()=>({selected:null,locked:false,correctIndex:null,timeAtAnswer:null}));
+    state.index=0; state.secondsLeft=state.timeLimitMinutes*60; startTimer(); $('resultView').style.display='none'; renderQuestion();
+  });
+
+  /* ==================== CERTIFICATE GENERATION ==================== */
+  function generateCertificate(){
+    const correct = state.answers.filter((a,i)=> a.selected===state.pool[i].answer).length;
+    const total = state.pool.length; const percent = Math.round((correct/total)*100);
+    if(percent<80){ alert('You must score at least 80% to download certificate.'); return; }
+    const canvas = $('certCanvas'); canvas.style.display='block'; const ctx = canvas.getContext('2d');
+    // design a modern landscape certificate
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    // border
+    ctx.strokeStyle = '#08324a'; ctx.lineWidth=12; roundRect(ctx,10,10,canvas.width-20,canvas.height-20,18); ctx.stroke();
+    // title
+   
+    ctx.fillStyle='#031428'; ctx.font='36px serif'; ctx.fillText('Certificate of Excellence',40,120);
+    ctx.font='22px serif'; ctx.fillText(`Awarded to`,40,170);
+    ctx.font='28px serif'; ctx.fillText(state.userName,40,210);
+    ctx.font='18px monospace'; ctx.fillText(`For outstanding performance on NOABYTE QUIZ LAB — Score: ${percent}% (${correct}/${total})`,40,260);
+    ctx.font='16px serif'; ctx.fillText(`Certificate ID: NOABYTE-${Date.now().toString().slice(-6)}`,40,310);
+    ctx.fillText(`Date: ${new Date().toLocaleDateString()}`,40,340);
+    // founder signature & name
+    ctx.font='20px serif'; ctx.fillText('Authorized by:',40,410); ctx.font='18px serif'; ctx.fillText('Noah Ogunwusi Founder Of NOABYTE TECH',40,440);
+    // QR code (external service will generate when printed)
+    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=NOABYTE|${state.userName}|${percent}`;
+    const img = new Image(); img.crossOrigin='anonymous'; img.onload = ()=>{ ctx.drawImage(img,canvas.width-190,60,150,150); window.open(canvas.toDataURL('image/png')); };
+    img.src = qrUrl;
+  }
+
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+  /* ==================== SMALL SOUND FX (using WebAudio) ==================== */
+  const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  function beep(freq=1000,dur=120){ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); g.gain.value=0.08; o.start(); setTimeout(()=>{ o.stop(); },dur); }
+  function playVictoryIfLast(){ /* short cheer */ beep(1200,120); setTimeout(()=>beep(1500,120),150); }
+  function playFailTone(){ beep(300,200); }
+  function playIntro(){ beep(700,120); }
+
+  /* ==================== VISUALS: PROGRESS ==================== */
+  function updateProgressUI(){
+    const total = state.pool.length; const answered = state.answers.filter(a=>a.locked).length; const percent = Math.round((answered/Math.max(1,total))*100);
+    $('progressFill').style.width = `${(state.index+1)/total*100}%`;
+    $('qProgress').style.width = `${percent}%`;
+    $('answeredCount').textContent = answered;
+    $('totalQuestions2').textContent = total;
+  }
+
+  /* ==================== HELPERS ==================== */
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
+
+  /* ==================== SMALL CELEBRATION ==================== */
+  function confetti(){
+    // simple visual: flash background
+    const body=document.body; const prev=body.style.background; body.style.transition='background 0.7s'; body.style.background='linear-gradient(180deg,#081b2a,#03324a)'; setTimeout(()=>{ body.style.background=prev; },800);
+  }
+
+  /* ==================== LEADERBOARD VIEW (simple modal) ==================== */
+  $('viewLeaderboardBtn').addEventListener('click',()=>{
+    const arr = JSON.parse(localStorage.getItem('noabyte_best_scores')||'[]');
+    if(arr.length===0){ alert('No scores yet.'); return; }
+    const txt = arr.slice(0,10).map((r,i)=>`${i+1}. ${r.name} — ${r.percent}% (${r.score}) on ${new Date(r.date).toLocaleDateString()}`).join('\n');
+    alert('Leaderboard:\n\n'+txt);
+  });
+
+  /* ==================== KEYBOARD SHORTCUTS (A/B/C/D, Enter) ==================== */
+  document.addEventListener('keydown',(e)=>{
+    if($('quizSection').style.display!=='block') return;
+    const k = e.key.toLowerCase();
+    if(['a','b','c','d'].includes(k)){
+      const indexMap = {a:0,b:1,c:2,d:3};
+      const nodes = $('optionsWrap').children; const idx = indexMap[k]; if(nodes[idx]) nodes[idx].click();
+    }
+    if(e.key==='Enter'){
+      // next
+      if(state.index<state.pool.length-1) { state.index++; renderQuestion(); }
+    }
+  });
+
+  /* ==================== INIT UI ==================== */
+  (function init(){ const best = getBest(); if(best) $('bestScoreDisplay').textContent = `${best.name} — ${best.percent}%`; else $('bestScoreDisplay').textContent='--'; })();
+
+
+      </script>
+  </body>
+</html>
